@@ -82,7 +82,6 @@ describe("corner reserve slide", () => {
     expect(layout).toContain(
       'const conversationFillsArea = mode === "conversation" || conversationMaximized'
     )
-    expect(layout).toContain("const convHoldsRight = conversationFillsArea")
     expect(layout).toContain('const fileHoldsRight = mode === "fusion"')
     expect(layout).toContain("const fileHoldsLeft = filesMaximized")
 
@@ -94,27 +93,23 @@ describe("corner reserve slide", () => {
       ),
     ].map((m) => [m[1].trim(), m[2]])
     expect(guarded).toEqual([
-      ["convHoldsRight", "rightCornerWidth"],
       ["fileHoldsLeft", "leftCornerWidth"],
       ["fileHoldsRight", "rightCornerWidth"],
     ])
-    // The conversation column holds the left corner in both modes: its row
-    // opens with an unconditional left reserve.
-    expect(layout).toMatch(
-      /\{!isConvSplit && \(\s*<div className="flex h-10 [^"]*">\s*<ChromeReserve width=\{leftCornerWidth\} \/>/
-    )
+    // The conversation tab strip is gone; its corner clearance moved onto the
+    // title row. The layout no longer mounts a conversation ChromeReserve.
+    expect(layout).not.toContain("<TabBar")
   })
 
-  it("mounts a split strip's right reserve only while the column holds the right edge", () => {
-    const start = panel.indexOf("function SplitStripCornerReserve(")
+  it("pads the conversation title for the right edge only while the column holds it", () => {
+    const start = panel.indexOf("function useConversationChromePad(")
     expect(start).toBeGreaterThan(-1)
     const body = panel.slice(start, panel.indexOf("\n}\n", start))
     expect(body).toContain(
       'const holdsRight = mode === "conversation" || conversationMaximized'
     )
-    expect(body).toContain('if (side === "right" && !holdsRight) return null')
-    expect(body).not.toContain("width <= 0")
-    expect(body).toMatch(/:\s*auxOpen\s*\?\s*0\s*:\s*rightChromeReserve\(/)
-    expect(body).toContain("return <ChromeReserve width={width} />")
+    expect(body).toContain("!holdsRight || auxOpen")
+    expect(body).toContain("rightChromeReserve(")
+    expect(body).toContain("leftChromeReserve(")
   })
 })

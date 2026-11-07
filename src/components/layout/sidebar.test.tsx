@@ -45,6 +45,7 @@ const spies = vi.hoisted(() => ({
     showWorktrees?: boolean
     showCompleted?: boolean
     showRecent?: boolean
+    listMode?: "folders" | "recent"
     sectionOrder?: readonly string[]
     tagFilter?: TagFilter
   } | null,
@@ -69,6 +70,7 @@ vi.mock("@/components/conversations/sidebar-conversation-list", async () => {
       showWorktrees?: boolean
       showCompleted?: boolean
       showRecent?: boolean
+      listMode?: "folders" | "recent"
       sectionOrder?: readonly string[]
       tagFilter?: TagFilter
     }) => {
@@ -396,40 +398,40 @@ describe("Sidebar — Show completed default", () => {
   })
 })
 
-describe("Sidebar — Show Recent group toggle", () => {
+describe("Sidebar — list mode switch", () => {
   beforeEach(() => {
     localStorage.clear()
     spies.listProps = null
     mockState.activeFolder = { id: 7, path: "/x" }
   })
 
-  it("defaults Show Recent on and threads it to the conversation list", () => {
+  it("defaults to folders and threads that mode to the conversation list", () => {
     renderSidebar()
-    expect(spies.listProps?.showRecent).toBe(true)
-  })
-
-  it("respects an explicitly-stored 'false' from localStorage", () => {
-    localStorage.setItem("workspace:sidebar-show-recent", "false")
-    renderSidebar()
-    expect(spies.listProps?.showRecent).toBe(false)
-  })
-
-  it("toggling the view-options item off persists the choice and keeps the menu open", async () => {
-    renderSidebar()
-
-    await openViewOptionsGroup("Conversation list")
-    await userEvent.click(
-      screen.getByRole("menuitemcheckbox", { name: "Show Recent group" })
-    )
-
-    expect(localStorage.getItem("workspace:sidebar-show-recent")).toBe("false")
-    expect(spies.listProps?.showRecent).toBe(false)
-    // The view-options menu is a settings panel: flipping one option must not
-    // dismiss it — nor the submenu it lives in — or changing two costs two
-    // trips back through the trigger.
     expect(
-      screen.getByRole("menuitemcheckbox", { name: "Show Recent group" })
-    ).toBeTruthy()
+      screen.getByRole("radio", { name: "Folders" })
+    ).toHaveAttribute("aria-checked", "true")
+    expect(spies.listProps?.listMode).toBe("folders")
+  })
+
+  it("respects a stored recent mode", () => {
+    localStorage.setItem("workspace:sidebar-list-mode", "recent")
+    renderSidebar()
+    expect(screen.getByRole("radio", { name: "Recent" })).toHaveAttribute(
+      "aria-checked",
+      "true"
+    )
+    expect(spies.listProps?.listMode).toBe("recent")
+  })
+
+  it("switches to Recent, persists the choice, and leaves the top nav in place", async () => {
+    renderSidebar()
+    await userEvent.click(screen.getByRole("radio", { name: "Recent" }))
+
+    expect(localStorage.getItem("workspace:sidebar-list-mode")).toBe("recent")
+    expect(spies.listProps?.listMode).toBe("recent")
+    expect(screen.getByRole("button", { name: /New chat/ })).toBeTruthy()
+    expect(screen.getByRole("button", { name: "Automations" })).toBeTruthy()
+    expect(screen.getByRole("button", { name: "To-dos" })).toBeTruthy()
   })
 })
 
@@ -448,7 +450,7 @@ describe("Sidebar — Tabs follow folder", () => {
     expect(row()).toHaveAttribute("aria-checked", "false")
     // A root row, not one more checkbox behind a submenu.
     expect(
-      screen.queryByRole("menuitemcheckbox", { name: "Show Recent group" })
+      screen.queryByRole("menuitemcheckbox", { name: "Show completed conversations" })
     ).toBeNull()
 
     await userEvent.click(row())
@@ -595,7 +597,7 @@ describe("Sidebar — Section order control", () => {
     mockState.activeFolder = { id: 7, path: "/x" }
   })
 
-  // The order rows are `menuitem`s labelled "<name> — position N of 3"; the
+  // The order rows are `menuitem`s labelled "<name> — position N of 2"; the
   // move buttons inside them are labelled "<name> — Move up/down".
   const orderRowNames = () =>
     screen
@@ -603,15 +605,14 @@ describe("Sidebar — Section order control", () => {
       .map((el) => el.getAttribute("aria-label") ?? "")
       .filter((label) => label.includes("position"))
 
-  it("defaults to Folders → Chat → Recent", async () => {
+  it("defaults to Folders → Chat, with Recent kept out of this menu", async () => {
     const user = userEvent.setup()
     renderSidebar()
     await user.click(screen.getByRole("button", { name: "View options" }))
 
     expect(orderRowNames()).toEqual([
-      "Folders — position 1 of 3",
-      "Chat — position 2 of 3",
-      "Recent — position 3 of 3",
+      "Folders — position 1 of 2",
+      "Chat — position 2 of 2",
     ])
     expect(spies.listProps?.sectionOrder).toEqual([
       "folders",
@@ -620,25 +621,24 @@ describe("Sidebar — Section order control", () => {
     ])
   })
 
-  it("moves a section up, persists the new order and threads it down", async () => {
+  it("moves Chat above Folders, persists the new order and threads it down", async () => {
     const user = userEvent.setup()
     renderSidebar()
     await user.click(screen.getByRole("button", { name: "View options" }))
-    await user.click(screen.getByRole("button", { name: "Recent — Move up" }))
+    await user.click(screen.getByRole("button", { name: "Chat — Move up" }))
 
     expect(orderRowNames()).toEqual([
-      "Folders — position 1 of 3",
-      "Recent — position 2 of 3",
-      "Chat — position 3 of 3",
+      "Chat — position 1 of 2",
+      "Folders — position 2 of 2",
     ])
     expect(spies.listProps?.sectionOrder).toEqual([
+      "chats",
       "folders",
       "recent",
-      "chats",
     ])
     expect(
       JSON.parse(localStorage.getItem("workspace:sidebar-section-order") ?? "")
-    ).toEqual(["folders", "recent", "chats"])
+    ).toEqual(["chats", "folders", "recent"])
   })
 
   it("disables the move buttons that would fall off an end", async () => {
@@ -650,7 +650,7 @@ describe("Sidebar — Section order control", () => {
       screen.getByRole("button", { name: "Folders — Move up" })
     ).toBeDisabled()
     expect(
-      screen.getByRole("button", { name: "Recent — Move down" })
+      screen.getByRole("button", { name: "Chat — Move down" })
     ).toBeDisabled()
     expect(
       screen.getByRole("button", { name: "Folders — Move down" })
@@ -666,7 +666,7 @@ describe("Sidebar — Section order control", () => {
     // and by the roving focus, so Alt+Arrow on the row is the ONLY keyboard
     // path — if this regresses, the control becomes mouse-only.
     const foldersRow = screen.getByRole("menuitem", {
-      name: "Folders — position 1 of 3",
+      name: "Folders — position 1 of 2",
     })
     // Focusing a menu item updates Radix's roving-focus state, so it has to run
     // inside act().
@@ -674,13 +674,12 @@ describe("Sidebar — Section order control", () => {
     await user.keyboard("{Alt>}{ArrowDown}{/Alt}")
 
     expect(orderRowNames()).toEqual([
-      "Chat — position 1 of 3",
-      "Folders — position 2 of 3",
-      "Recent — position 3 of 3",
+      "Chat — position 1 of 2",
+      "Folders — position 2 of 2",
     ])
     // Focus follows the row it moved, so a second press keeps going.
     expect(document.activeElement?.getAttribute("aria-label")).toBe(
-      "Folders — position 2 of 3"
+      "Folders — position 2 of 2"
     )
   })
 

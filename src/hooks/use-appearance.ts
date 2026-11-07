@@ -39,6 +39,15 @@ export function useWelcomeQuickActions() {
   return { showWelcomeQuickActions, setShowWelcomeQuickActions }
 }
 
+/** 思考内容和工具操作是否保持展开。无 AppearanceProvider 时回退为自动收起。 */
+export function useKeepActivityExpanded() {
+  const ctx = useContext(AppearanceContext)
+  return {
+    keepActivityExpanded: ctx?.keepActivityExpanded ?? false,
+    setKeepActivityExpanded: ctx?.setKeepActivityExpanded ?? (() => {}),
+  }
+}
+
 /** 聊天区域动画开关（设置页用）。 */
 export function useChatAnimationsSetting() {
   const { chatAnimations, setChatAnimations } = useAppearance()

@@ -954,6 +954,9 @@ export interface SidebarConversationListProps {
    *  `sectionOrder`. Defaults to off here; the Sidebar passes the user's
    *  preference, whose product default is ON. */
   showRecent?: boolean
+  /** Exclusive list under Pinned: folder tree, or flat Recent. When set it
+   *  wins over `showRecent`. Omitted keeps the historical behavior. */
+  listMode?: SidebarListMode
   /** Narrow every section to conversations carrying these tags (see
    *  `matchesTagFilter`). Must be referentially stable — it feeds the bucket
    *  memos. Defaults to no filter. */
@@ -967,6 +970,7 @@ export function SidebarConversationList({
   sectionOrder = DEFAULT_SECTION_ORDER,
   showWorktrees = false,
   showRecent = false,
+  listMode,
   tagFilter = EMPTY_TAG_FILTER,
 }: SidebarConversationListProps & {
   ref?: Ref<SidebarConversationListHandle>
@@ -1664,6 +1668,7 @@ export function SidebarConversationList({
         recentConversations,
         recentExpanded,
         showRecent,
+        listMode,
         recentLimit,
         sectionOrder,
         conversationExpanded,
@@ -1688,6 +1693,7 @@ export function SidebarConversationList({
       recentConversations,
       recentExpanded,
       showRecent,
+      listMode,
       recentLimit,
       sectionOrder,
       conversationExpanded,

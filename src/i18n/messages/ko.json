@@ -187,6 +187,11 @@
       "sectionDescription": "새 대화 페이지에서 입력창 위에 표시되는 '코드 개발 / 일상 업무' 바로가기 카드입니다.",
       "showQuickActions": "새 대화 페이지에 표시"
     },
+    "activityPanel": {
+      "sectionTitle": "대화 과정",
+      "sectionDescription": "생각과 도구 호출은 끝나면 접힙니다. 켜면 펼친 채로 더 차분한 본문 스타일로 보여 줍니다.",
+      "keepExpanded": "생각과 작업을 항상 펼치기"
+    },
     "chatAnimations": {
       "sectionTitle": "채팅 애니메이션",
       "sectionDescription": "대화 영역의 접기/펼치기, 도구 호출, 작업 상태 등의 애니메이션과 부드러운 스크롤을 제어합니다. 끄면 즉시 갱신됩니다. 스피너는 계속 회전합니다.",
@@ -2215,6 +2220,9 @@
       "showCompleted": "완료된 대화 표시",
       "showWorktrees": "워크트리 브랜치 표시",
       "showRecent": "'최근' 그룹 표시",
+      "listModeSwitch": "대화 정렬",
+      "listModeFolders": "폴더",
+      "listModeRecent": "최근",
       "tabsFollowFolder": "폴더에 따라 탭 전환",
       "tabsFollowFolderHint": "선택한 폴더의 대화 탭과 파일 탭만 표시합니다. 폴더를 클릭하면 전환됩니다.",
       "toggleFolderExpanded": "폴더 펼치기 또는 접기",
@@ -3802,6 +3810,9 @@
         "tokenCacheWrite": "캐시 쓰기",
         "completedAt": "완료 시각",
         "jumpToPreviousUserMessage": "이전 사용자 메시지로 이동",
+        "promptRailPrevious": "내가 보낸 이전 메시지",
+        "promptRailNext": "내가 보낸 다음 메시지",
+        "promptRailBottom": "맨 아래로",
         "showMore": "더보기",
         "showLess": "접기",
         "resizeWidth": "드래그하여 채팅 너비 조정 · 더블 클릭하여 초기화"
@@ -3811,7 +3822,12 @@
         "elapsedMinutes": "{value}분",
         "elapsedSeconds": "{value}초",
         "outputSpeedAria": "예상 출력 속도",
-        "outputSpeedTooltip": "예상 출력 속도（텍스트 + 추론）"
+        "outputSpeedTooltip": "예상 출력 속도（텍스트 + 추론）",
+        "filesChanged": "{count}개 파일 수정",
+        "linesChanged": "{additions}줄 추가, {deletions}줄 삭제",
+        "editStatsAria": "이번 턴 변경",
+        "editStatsTooltip": "이번 턴에 {files}개 파일 수정 — {additions}줄 추가, {deletions}줄 삭제",
+        "outputSpeedValue": "{value} token/초"
       },
       "jsonTree": {
         "viewRaw": "원본 JSON 보기",

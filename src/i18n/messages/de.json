@@ -187,6 +187,11 @@
       "sectionDescription": "Die Shortcut-Karten „Code-Entwicklung / Büroarbeit“ über dem Eingabefeld auf der Seite für eine neue Konversation.",
       "showQuickActions": "Auf der Seite für neue Konversationen anzeigen"
     },
+    "activityPanel": {
+      "sectionTitle": "Gesprächsverlauf",
+      "sectionDescription": "Denken und Tool-Aufrufe klappen nach dem Ende zusammen. Eingeschaltet bleiben sie ausgeklappt, in ruhigerem Fließtext.",
+      "keepExpanded": "Denken und Aktionen immer ausgeklappt lassen"
+    },
     "chatAnimations": {
       "sectionTitle": "Chat-Animationen",
       "sectionDescription": "Animationen für Ein-/Ausklappen, Tool-Aufrufe und Arbeitsstatus im Unterhaltungsbereich sowie sanftes Scrollen. Wenn deaktiviert, werden Änderungen sofort angezeigt. Ladeanzeigen drehen sich weiterhin.",
@@ -2215,6 +2220,9 @@
       "showCompleted": "Abgeschlossene Konversationen anzeigen",
       "showWorktrees": "Worktree-Branches anzeigen",
       "showRecent": "Gruppe „Zuletzt“ anzeigen",
+      "listModeSwitch": "Listenansicht",
+      "listModeFolders": "Ordner",
+      "listModeRecent": "Zuletzt",
       "tabsFollowFolder": "Tabs folgen dem Ordner",
       "tabsFollowFolderHint": "Zeigt nur die Konversations- und Datei-Tabs des ausgewählten Ordners. Zum Wechseln auf einen Ordner klicken.",
       "toggleFolderExpanded": "Ordner auf- oder zuklappen",
@@ -3802,6 +3810,9 @@
         "tokenCacheWrite": "Cache-Schreiben",
         "completedAt": "Abgeschlossen um",
         "jumpToPreviousUserMessage": "Zur Benutzernachricht springen",
+        "promptRailPrevious": "Meine vorige Nachricht",
+        "promptRailNext": "Meine nächste Nachricht",
+        "promptRailBottom": "Ganz nach unten",
         "showMore": "Mehr anzeigen",
         "showLess": "Weniger anzeigen",
         "resizeWidth": "Ziehen, um die Chat-Breite zu ändern · Doppelklick zum Zurücksetzen"
@@ -3811,7 +3822,12 @@
         "elapsedMinutes": "{value} Min",
         "elapsedSeconds": "{value} Sek",
         "outputSpeedAria": "Geschätzte Ausgabegeschwindigkeit",
-        "outputSpeedTooltip": "Geschätzte Ausgabegeschwindigkeit (Text + Denken)"
+        "outputSpeedTooltip": "Geschätzte Ausgabegeschwindigkeit (Text + Denken)",
+        "filesChanged": "{count, plural, one {# Datei geändert} other {# Dateien geändert}}",
+        "linesChanged": "{additions} Zeilen ergänzt, {deletions} entfernt",
+        "editStatsAria": "Änderungen in diesem Durchlauf",
+        "editStatsTooltip": "{files, plural, one {# Datei} other {# Dateien}} in diesem Durchlauf geändert: {additions} Zeilen ergänzt, {deletions} entfernt",
+        "outputSpeedValue": "{value} Tokens/s"
       },
       "jsonTree": {
         "viewRaw": "Rohes JSON anzeigen",

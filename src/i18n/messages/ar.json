@@ -187,6 +187,11 @@
       "sectionDescription": "بطاقات الاختصار «تطوير الكود / الأعمال المكتبية» التي تظهر أعلى مربع الإدخال في صفحة المحادثة الجديدة.",
       "showQuickActions": "العرض في صفحة المحادثة الجديدة"
     },
+    "activityPanel": {
+      "sectionTitle": "نشاط المحادثة",
+      "sectionDescription": "يُطوى التفكير واستدعاءات الأدوات بعد انتهائها. فعّل الإبقاء عليها مفتوحة بنص أهدأ.",
+      "keepExpanded": "إبقاء التفكير والإجراءات موسّعة"
+    },
     "chatAnimations": {
       "sectionTitle": "حركات المحادثة",
       "sectionDescription": "حركات الطي/التوسيع واستدعاءات الأدوات وحالة العمل داخل منطقة المحادثة، إضافةً إلى التمرير السلس. عند الإيقاف تتحدّث الواجهة فورًا. تستمر مؤشرات التحميل في الدوران.",
@@ -2215,6 +2220,9 @@
       "showCompleted": "عرض المحادثات المكتملة",
       "showWorktrees": "عرض فروع worktree",
       "showRecent": "عرض مجموعة الأحدث",
+      "listModeSwitch": "ترتيب القائمة",
+      "listModeFolders": "المجلدات",
+      "listModeRecent": "الأحدث",
       "tabsFollowFolder": "علامات التبويب تتبع المجلد",
       "tabsFollowFolderHint": "إظهار علامات تبويب المحادثات والملفات للمجلد المحدد فقط. انقر على مجلد للتبديل.",
       "toggleFolderExpanded": "توسيع المجلد أو طيه",
@@ -3802,6 +3810,9 @@
         "tokenCacheWrite": "كتابة التخزين المؤقت",
         "completedAt": "وقت الإنجاز",
         "jumpToPreviousUserMessage": "الانتقال إلى رسالة المستخدم",
+        "promptRailPrevious": "رسالتي السابقة",
+        "promptRailNext": "رسالتي التالية",
+        "promptRailBottom": "إلى الأسفل",
         "showMore": "عرض المزيد",
         "showLess": "طي",
         "resizeWidth": "اسحب لتغيير عرض المحادثة · انقر مرتين للإعادة"
@@ -3811,7 +3822,12 @@
         "elapsedMinutes": "{value}د",
         "elapsedSeconds": "{value}ث",
         "outputSpeedAria": "السرعة التقديرية للإخراج",
-        "outputSpeedTooltip": "السرعة التقديرية للإخراج (نص + تفكير)"
+        "outputSpeedTooltip": "السرعة التقديرية للإخراج (نص + تفكير)",
+        "filesChanged": "{count} ملف مُعدَّل",
+        "linesChanged": "إضافة {additions} سطر، حذف {deletions} سطر",
+        "editStatsAria": "تغييرات هذه الجولة",
+        "editStatsTooltip": "غيّرت هذه الجولة {files} ملف — إضافة {additions} سطر، حذف {deletions} سطر",
+        "outputSpeedValue": "{value} رمز/ثانية"
       },
       "jsonTree": {
         "viewRaw": "عرض JSON الخام",
@@ -3834,9 +3850,9 @@
         "resumeReasonLabel": "سبب الاستئناف",
         "detailTitle": "محادثة الوكيل الفرعي",
         "detailDescription": "عرض للقراءة فقط لمحادثة الوكيل الفرعي المُفوَّض.",
-        "waitForResult": "في انتظار نتيجة المهمة \u2066{task}\u2069",
+        "waitForResult": "في انتظار نتيجة المهمة ⁦{task}⁩",
         "waitForResultNoTask": "في انتظار نتيجة المهمة",
-        "cancelTask": "جارٍ إلغاء المهمة \u2066{task}\u2069",
+        "cancelTask": "جارٍ إلغاء المهمة ⁦{task}⁩",
         "cancelTaskNoTask": "جارٍ إلغاء المهمة",
         "resultPageOf": "{current} / {total}",
         "prevResult": "النتيجة السابقة",
@@ -3995,7 +4011,7 @@
           "monitor": "مراقبة",
           "networkAccess": "الوصول إلى الشبكة",
           "codexScript": "نص برمجي",
-          "background": "في الخلفية · \u2066#{id}\u2069",
+          "background": "في الخلفية · ⁦#{id}⁩",
           "backgroundShort": "في الخلفية",
           "sessionWait": "انتظار",
           "sessionTerminate": "إيقاف",
@@ -4287,9 +4303,9 @@
         "tokens": "{count} رمز",
         "stopDeclined": "تعذّر إيقاف هذه المهمة، ربما تكون قد انتهت بالفعل.",
         "stopFailed": "فشل إيقاف المهمة: {error}",
-        "agentWorking": "\u2066{agent}\u2069 يعمل",
+        "agentWorking": "⁦{agent}⁩ يعمل",
         "scheduledWakeup": "تنبيه مجدول",
-        "scheduledWakeupAt": "تنبيه مجدول في \u2066{time}\u2069",
+        "scheduledWakeupAt": "تنبيه مجدول في ⁦{time}⁩",
         "scheduledTask": "مهمة مجدولة"
       },
       "remoteControl": {
@@ -6624,8 +6640,8 @@
       "fetch": "جلب النماذج",
       "needKey": "أدخل مفتاح API أولًا.",
       "needBaseUrl": "أدخل عنوان API بصيغة http(s) أولًا.",
-      "summaryModels": "{count, plural, zero {لا نماذج} one {نموذج واحد} two {نموذجان} few {# نماذج} many {# نموذجًا} other {# نموذج}} · \u2066{host}\u2069",
-      "summaryPicked": "تم اختيار {picked} من {total} · \u2066{host}\u2069",
+      "summaryModels": "{count, plural, zero {لا نماذج} one {نموذج واحد} two {نموذجان} few {# نماذج} many {# نموذجًا} other {# نموذج}} · ⁦{host}⁩",
+      "summaryPicked": "تم اختيار {picked} من {total} · ⁦{host}⁩",
       "summaryRemoved": "أُزيل {count}",
       "fromPublished": "القائمة المطبّقة",
       "fromCache": "قائمة جُلبت سابقًا",
@@ -6706,7 +6722,7 @@
   "ProviderModels": {
     "fetch": "جلب النماذج",
     "fetching": "جارٍ جلب النماذج…",
-    "fromHost": "{count, plural, zero {لا نماذج} one {نموذج واحد} two {نموذجان} few {# نماذج} many {# نموذجًا} other {# نموذج}} · \u2066{host}\u2069",
+    "fromHost": "{count, plural, zero {لا نماذج} one {نموذج واحد} two {نموذجان} few {# نماذج} many {# نموذجًا} other {# نموذج}} · ⁦{host}⁩",
     "retry": "إعادة المحاولة",
     "needKey": "أدخل مفتاح API أولًا: تُجلب النماذج به.",
     "needBaseUrl": "أدخل عنوان API أولًا.",

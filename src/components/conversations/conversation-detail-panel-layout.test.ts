@@ -32,10 +32,6 @@ const workspaceLayoutSource = readFileSync(
   resolve(process.cwd(), "src/app/workspace/layout.tsx"),
   "utf8"
 )
-const tabBarSource = readFileSync(
-  resolve(process.cwd(), "src/components/tabs/tab-bar.tsx"),
-  "utf8"
-)
 const messageListViewSource = readFileSync(
   resolve(process.cwd(), "src/components/message/message-list-view.tsx"),
   "utf8"
@@ -340,10 +336,7 @@ describe("ConversationDetailPanel split-group render model", () => {
     expect(source).toContain(
       "{tabsFollowFolder && visibleTabs.length === 0 && ("
     )
-    expect(workspaceLayoutSource).toContain(
-      "const showConvStrip = hasConvTabs || tabsFollowFolder"
-    )
-    expect(workspaceLayoutSource).toContain("{showConvStrip ? (")
+    expect(workspaceLayoutSource).not.toContain("<TabBar")
   })
 
   // TileScrollContainer ignores mutations strictly inside a marked tile — that
@@ -369,13 +362,9 @@ describe("ConversationDetailPanel split-group render model", () => {
     expect(source).toContain("showActiveFlow={(isSplit || canTileG) && active}")
   })
 
-  it("gives each split group its own strip and divider overlays only while split", () => {
-    // The column's single maximize/restore button rides on the top-right
-    // group's strip — the one in the unsplit strip's place.
-    expect(source).toContain(
-      "<TabBar groupId={groupId} maximizeControl={touchesRight} />"
-    )
-    expect(workspaceLayoutSource).toContain("<TabBar maximizeControl />")
+  it("gives each split group its own title and divider overlays only while split", () => {
+    expect(source).not.toContain("<TabBar")
+    expect(workspaceLayoutSource).not.toContain("<TabBar")
     const handlesIdx = source.indexOf("groupHandles.map((handle) => (")
     expect(handlesIdx).toBeGreaterThan(-1)
     expect(source.slice(handlesIdx - 80, handlesIdx)).toContain("{isSplit &&")

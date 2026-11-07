@@ -187,6 +187,11 @@
       "sectionDescription": "新會話頁面輸入框上方顯示的「程式開發 / 日常辦公」快捷卡片區域。",
       "showQuickActions": "在新會話頁面顯示"
     },
+    "activityPanel": {
+      "sectionTitle": "會話過程",
+      "sectionDescription": "思考內容和工具操作跑完後預設收成一條摺疊條。開啟後保持展開。",
+      "keepExpanded": "始終展開思考和操作"
+    },
     "chatAnimations": {
       "sectionTitle": "聊天區域動畫",
       "sectionDescription": "對話區域內的摺疊/展開、工具呼叫、工作狀態等動畫，以及平滑捲動。關閉後介面會立即更新、不再有過渡動畫；載入轉圈圖示仍會旋轉。",
@@ -2215,6 +2220,9 @@
       "showCompleted": "顯示已完成對話",
       "showWorktrees": "顯示工作樹分支",
       "showRecent": "顯示「最近」分組",
+      "listModeSwitch": "會話排列方式",
+      "listModeFolders": "資料夾",
+      "listModeRecent": "最近",
       "tabsFollowFolder": "分頁跟隨資料夾",
       "tabsFollowFolderHint": "只顯示所選資料夾的會話與檔案分頁，點擊資料夾即可切換。",
       "toggleFolderExpanded": "展開或收合資料夾",
@@ -3802,6 +3810,9 @@
         "tokenCacheWrite": "快取寫入",
         "completedAt": "完成時間",
         "jumpToPreviousUserMessage": "跳轉到上一條使用者訊息",
+        "promptRailPrevious": "上一則我發的",
+        "promptRailNext": "下一則我發的",
+        "promptRailBottom": "回到最底部",
         "showMore": "展開",
         "showLess": "收合",
         "resizeWidth": "拖曳調整聊天區域寬度 · 雙擊恢復預設"
@@ -3811,7 +3822,12 @@
         "elapsedMinutes": "{value} 分鐘",
         "elapsedSeconds": "{value} 秒",
         "outputSpeedAria": "估算輸出速度",
-        "outputSpeedTooltip": "估算輸出速度（正文 + 思考）"
+        "outputSpeedTooltip": "估算輸出速度（正文 + 思考）",
+        "filesChanged": "改了 {count} 個檔案",
+        "linesChanged": "新增 {additions} 行、刪除 {deletions} 行",
+        "editStatsAria": "本輪改動",
+        "editStatsTooltip": "本輪改了 {files} 個檔案：新增 {additions} 行、刪除 {deletions} 行",
+        "outputSpeedValue": "{value} token/秒"
       },
       "jsonTree": {
         "viewRaw": "檢視原始 JSON",

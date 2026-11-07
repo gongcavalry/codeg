@@ -187,6 +187,11 @@
       "sectionDescription": "新会话页面输入框上方显示的「代码开发 / 日常办公」快捷卡片区域。",
       "showQuickActions": "在新会话页面显示"
     },
+    "activityPanel": {
+      "sectionTitle": "会话过程",
+      "sectionDescription": "思考内容和工具操作跑完后默认收成一条折叠条。打开后保持展开。",
+      "keepExpanded": "始终展开思考和操作"
+    },
     "chatAnimations": {
       "sectionTitle": "聊天区域动画",
       "sectionDescription": "会话区域内的折叠/展开、工具调用、工作状态等动画，以及平滑滚动。关闭后界面立即更新、不再有过渡动画；加载转圈图标仍会旋转。",
@@ -2215,6 +2220,9 @@
       "showCompleted": "显示已完成会话",
       "showWorktrees": "显示工作树分支",
       "showRecent": "显示「最近」分组",
+      "listModeSwitch": "会话排列方式",
+      "listModeFolders": "文件夹",
+      "listModeRecent": "最近",
       "tabsFollowFolder": "标签页跟随文件夹",
       "tabsFollowFolderHint": "只显示所选文件夹的会话和文件标签页，点击文件夹即可切换。",
       "toggleFolderExpanded": "展开或收起文件夹",
@@ -3802,6 +3810,9 @@
         "tokenCacheWrite": "缓存写入",
         "completedAt": "完成时间",
         "jumpToPreviousUserMessage": "跳转到上一条用户消息",
+        "promptRailPrevious": "上一条我发的",
+        "promptRailNext": "下一条我发的",
+        "promptRailBottom": "回到最底部",
         "showMore": "展开",
         "showLess": "收起",
         "resizeWidth": "拖动调整聊天区域宽度 · 双击恢复默认"
@@ -3811,7 +3822,12 @@
         "elapsedMinutes": "{value} 分钟",
         "elapsedSeconds": "{value} 秒",
         "outputSpeedAria": "估算输出速度",
-        "outputSpeedTooltip": "估算输出速度（正文 + 思考）"
+        "outputSpeedTooltip": "估算输出速度（正文 + 思考）",
+        "filesChanged": "改了 {count} 个文件",
+        "linesChanged": "新增 {additions} 行、删除 {deletions} 行",
+        "editStatsAria": "本轮改动",
+        "editStatsTooltip": "本轮改了 {files} 个文件：新增 {additions} 行、删除 {deletions} 行",
+        "outputSpeedValue": "{value} token/秒"
       },
       "jsonTree": {
         "viewRaw": "查看原始 JSON",

@@ -187,6 +187,11 @@
       "sectionDescription": "Os cartões de atalho «Desenvolvimento / Escritório» exibidos acima do campo de entrada na página de nova conversa.",
       "showQuickActions": "Mostrar na página de nova conversa"
     },
+    "activityPanel": {
+      "sectionTitle": "Atividade da conversa",
+      "sectionDescription": "O raciocínio e as chamadas de ferramenta recolhem ao terminar. Ative para mantê-los abertos, num estilo de texto mais calmo.",
+      "keepExpanded": "Manter o raciocínio e as ações expandidos"
+    },
     "chatAnimations": {
       "sectionTitle": "Animações do chat",
       "sectionDescription": "Animações de recolher/expandir, chamadas de ferramentas e estado de trabalho na área de conversa, além da rolagem suave. Desative para atualizações instantâneas. Os indicadores de carregamento continuam girando.",
@@ -2215,6 +2220,9 @@
       "showCompleted": "Mostrar conversas concluídas",
       "showWorktrees": "Mostrar branches de worktree",
       "showRecent": "Mostrar grupo Recentes",
+      "listModeSwitch": "Disposição da lista",
+      "listModeFolders": "Pastas",
+      "listModeRecent": "Recentes",
       "tabsFollowFolder": "Abas acompanham a pasta",
       "tabsFollowFolderHint": "Mostra apenas as abas de conversas e arquivos da pasta selecionada. Clique em uma pasta para alternar.",
       "toggleFolderExpanded": "Expandir ou recolher pasta",
@@ -3802,6 +3810,9 @@
         "tokenCacheWrite": "Escrita de cache",
         "completedAt": "Concluído às",
         "jumpToPreviousUserMessage": "Ir para a mensagem do usuário",
+        "promptRailPrevious": "Minha mensagem anterior",
+        "promptRailNext": "Minha mensagem seguinte",
+        "promptRailBottom": "Ir para o fim",
         "showMore": "Mostrar mais",
         "showLess": "Mostrar menos",
         "resizeWidth": "Arraste para ajustar a largura do chat · clique duas vezes para redefinir"
@@ -3811,7 +3822,12 @@
         "elapsedMinutes": "{value} min",
         "elapsedSeconds": "{value} s",
         "outputSpeedAria": "Velocidade de saída estimada",
-        "outputSpeedTooltip": "Velocidade de saída estimada (texto + raciocínio)"
+        "outputSpeedTooltip": "Velocidade de saída estimada (texto + raciocínio)",
+        "filesChanged": "{count, plural, one {# arquivo alterado} other {# arquivos alterados}}",
+        "linesChanged": "{additions} linhas adicionadas, {deletions} removidas",
+        "editStatsAria": "Alterações desta rodada",
+        "editStatsTooltip": "{files, plural, one {# arquivo} other {# arquivos}} alterados nesta rodada: {additions} linhas adicionadas, {deletions} removidas",
+        "outputSpeedValue": "{value} tokens/s"
       },
       "jsonTree": {
         "viewRaw": "Ver JSON bruto",

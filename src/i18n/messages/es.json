@@ -187,6 +187,11 @@
       "sectionDescription": "Las tarjetas de acceso rápido «Desarrollo de código / Ofimática» que se muestran sobre el editor en la página de nueva conversación.",
       "showQuickActions": "Mostrar en la página de nueva conversación"
     },
+    "activityPanel": {
+      "sectionTitle": "Actividad de la conversación",
+      "sectionDescription": "El pensamiento y las llamadas a herramientas se pliegan al terminar. Actívalo para mantenerlos abiertos, con un estilo de texto más discreto.",
+      "keepExpanded": "Mantener el pensamiento y las acciones expandidos"
+    },
     "chatAnimations": {
       "sectionTitle": "Animaciones del chat",
       "sectionDescription": "Animaciones de plegado/desplegado, llamadas a herramientas y estado de trabajo en el área de conversación, además del desplazamiento suave. Desactívalas para actualizaciones inmediatas. Los indicadores de carga siguen girando.",
@@ -2215,6 +2220,9 @@
       "showCompleted": "Mostrar conversaciones completadas",
       "showWorktrees": "Mostrar ramas de worktree",
       "showRecent": "Mostrar grupo Recientes",
+      "listModeSwitch": "Disposición de la lista",
+      "listModeFolders": "Carpetas",
+      "listModeRecent": "Recientes",
       "tabsFollowFolder": "Pestañas según la carpeta",
       "tabsFollowFolderHint": "Muestra solo las pestañas de conversaciones y archivos de la carpeta seleccionada. Haz clic en una carpeta para cambiar.",
       "toggleFolderExpanded": "Expandir o contraer carpeta",
@@ -3802,6 +3810,9 @@
         "tokenCacheWrite": "Escritura de caché",
         "completedAt": "Completado a las",
         "jumpToPreviousUserMessage": "Ir al mensaje del usuario",
+        "promptRailPrevious": "Mi mensaje anterior",
+        "promptRailNext": "Mi mensaje siguiente",
+        "promptRailBottom": "Ir al final",
         "showMore": "Mostrar más",
         "showLess": "Mostrar menos",
         "resizeWidth": "Arrastra para cambiar el ancho del chat · doble clic para restablecer"
@@ -3811,7 +3822,12 @@
         "elapsedMinutes": "{value} min",
         "elapsedSeconds": "{value} s",
         "outputSpeedAria": "Velocidad de salida estimada",
-        "outputSpeedTooltip": "Velocidad de salida estimada (texto + razonamiento)"
+        "outputSpeedTooltip": "Velocidad de salida estimada (texto + razonamiento)",
+        "filesChanged": "{count, plural, one {# archivo modificado} other {# archivos modificados}}",
+        "linesChanged": "{additions} líneas añadidas, {deletions} eliminadas",
+        "editStatsAria": "Cambios de este turno",
+        "editStatsTooltip": "{files, plural, one {# archivo} other {# archivos}} modificados en este turno: {additions} líneas añadidas, {deletions} eliminadas",
+        "outputSpeedValue": "{value} tokens/s"
       },
       "jsonTree": {
         "viewRaw": "Ver JSON sin formato",

@@ -39,6 +39,7 @@ import {
   STORAGE_KEY_CHAT_ANIMATIONS,
   STORAGE_KEY_CHAT_CONTENT_WIDTH,
   STORAGE_KEY_WELCOME_QUICK_ACTIONS,
+  STORAGE_KEY_KEEP_ACTIVITY_EXPANDED,
   STORAGE_KEY_UI_FONT,
   STORAGE_KEY_UI_FONT_CUSTOM,
   STORAGE_KEY_UI_FONT_STACK,
@@ -125,6 +126,9 @@ type AppearanceContextValue = {
   /** 新会话欢迎页是否显示「模式选择区域」（QuickActions 快捷卡片），默认开启 */
   showWelcomeQuickActions: boolean
   setShowWelcomeQuickActions: (on: boolean) => void
+  /** 思考内容和工具操作是否保持展开，默认开启 */
+  keepActivityExpanded: boolean
+  setKeepActivityExpanded: (on: boolean) => void
   /** 聊天区域动画总开关，默认开启；关闭时 <html> 带 data-chat-animations="off" */
   chatAnimations: boolean
   setChatAnimations: (on: boolean) => void
@@ -406,6 +410,9 @@ export function AppearanceProvider({
   const [showWelcomeQuickActions, setShowWelcomeQuickActionsState] =
     useState<boolean>(() => readBool(STORAGE_KEY_WELCOME_QUICK_ACTIONS, true))
 
+  const [keepActivityExpanded, setKeepActivityExpandedState] =
+    useState<boolean>(() => readBool(STORAGE_KEY_KEEP_ACTIVITY_EXPANDED, true))
+
   // 聊天区域动画开关：默认开启，键缺失即回退为 true。DOM 属性由 inline 脚本预置，
   // 这里的 effect 只负责让后续切换/跨窗口同步落到 <html>。
   const [chatAnimations, setChatAnimationsState] = useState<boolean>(() =>
@@ -576,6 +583,11 @@ export function AppearanceProvider({
   const setShowWelcomeQuickActions = useCallback((on: boolean) => {
     setShowWelcomeQuickActionsState(on)
     persist(STORAGE_KEY_WELCOME_QUICK_ACTIONS, on ? "1" : "0")
+  }, [])
+
+  const setKeepActivityExpanded = useCallback((on: boolean) => {
+    setKeepActivityExpandedState(on)
+    persist(STORAGE_KEY_KEEP_ACTIVITY_EXPANDED, on ? "1" : "0")
   }, [])
 
   const setChatAnimations = useCallback((on: boolean) => {
@@ -1035,6 +1047,11 @@ export function AppearanceProvider({
           readBool(STORAGE_KEY_WELCOME_QUICK_ACTIONS, true)
         )
       }
+      if (e.key === STORAGE_KEY_KEEP_ACTIVITY_EXPANDED) {
+        setKeepActivityExpandedState(
+          readBool(STORAGE_KEY_KEEP_ACTIVITY_EXPANDED, true)
+        )
+      }
       if (e.key === STORAGE_KEY_CHAT_CONTENT_WIDTH) {
         const next = readChatContentWidth()
         chatContentWidthRef.current = next
@@ -1148,6 +1165,8 @@ export function AppearanceProvider({
         setZoomLevel,
         showWelcomeQuickActions,
         setShowWelcomeQuickActions,
+        keepActivityExpanded,
+        setKeepActivityExpanded,
         chatAnimations,
         setChatAnimations,
         chatContentWidth,

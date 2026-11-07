@@ -1273,6 +1273,12 @@ export function buildRows(args: {
    *  matching the pre-Recent row model. The app passes it explicitly; its
    *  product default is ON. */
   showRecent?: boolean
+  /**
+   * Exclusive arrangement under Pinned. `"folders"` emits Folders and Chat and
+   * never Recent. `"recent"` emits only Recent. Omitted keeps the historical
+   * `showRecent` behavior so existing callers stay unchanged.
+   */
+  listMode?: SidebarListMode
   /** How many Recent conversations to emit before stopping and appending a
    *  {@link RecentMoreRow}. Optional — omitted means no limit (the historical
    *  behavior, kept for tests). The app raises it a page at a time, and the
@@ -1343,6 +1349,7 @@ export function buildRows(args: {
     recentConversations = EMPTY_CONVERSATIONS,
     recentExpanded = true,
     showRecent = false,
+    listMode,
     recentLimit,
     sectionOrder = DEFAULT_SECTION_ORDER,
     conversationExpanded = EMPTY_EXPANDED,
@@ -1581,6 +1588,11 @@ export function buildRows(args: {
   // Normalized (not consumed raw) so a truncated / repeated / unknown-entry
   // order can never drop a section off the sidebar or emit one twice.
   for (const section of normalizeSectionOrder(sectionOrder)) {
+    if (listMode === "recent") {
+      if (section === "recent") pushRecent()
+      continue
+    }
+    if (listMode === "folders" && section === "recent") continue
     if (section === "folders") pushFolders()
     else if (section === "chats") pushChats()
     else if (showRecent) pushRecent()

@@ -334,7 +334,7 @@ describe("MessageListView insights", () => {
     expect(published()?.nav.currentTurnId).toBe("u2")
 
     act(() => release())
-    expect(viewport.listener).toBeUndefined()
+    expect(viewport.listener).toEqual(expect.any(Function))
     expect(published()?.nav.currentTurnId).toBeNull()
   })
 

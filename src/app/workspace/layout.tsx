@@ -1,11 +1,5 @@
 "use client"
 
-import {
-  useVisibleConversationLayout,
-  useVisibleConversationTabs,
-} from "@/stores/tab-store"
-import { leafIds } from "@/lib/tab-group-layout"
-import { useFolderTabsStore } from "@/stores/folder-tabs-store"
 import { BrowserEvalConfirm } from "@/components/browser/browser-eval-confirm"
 import { BrowserEventsBridge } from "@/components/browser/browser-events-bridge"
 import { BrowserScreenshotMarkupHost } from "@/components/browser/browser-screenshot-markup"
@@ -75,7 +69,6 @@ import { UpdateProvider } from "@/components/providers/update-provider"
 import { useWorkspaceBackground, useZoomLevel } from "@/hooks/use-appearance"
 import { useHistoryBackDismiss } from "@/hooks/use-history-back-dismiss"
 import { FILL_MODE_STYLE } from "@/lib/workspace-background"
-import { TabBar } from "@/components/tabs/tab-bar"
 import { TerminalPanel } from "@/components/terminal/terminal-panel"
 import { AuxPanel } from "@/components/layout/aux-panel"
 import { ChromeReserve } from "@/components/layout/chrome-reserve"
@@ -351,11 +344,6 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
   const { isOpen: auxOpen } = useAuxPanelContext()
   const { isMac, isWindows, isLinux } = usePlatform()
   const { zoomLevel } = useZoomLevel()
-  const hasConvTabs = useVisibleConversationTabs().length > 0
-  // Tabs following the folder keep the strip (and its "+") for an empty one.
-  const tabsFollowFolder = useFolderTabsStore((s) => s.enabled)
-  const showConvStrip = hasConvTabs || tabsFollowFolder
-  const isConvSplit = leafIds(useVisibleConversationLayout()).length > 1
   const winLinuxControls = isDesktop() && (isWindows || isLinux)
   // The window chrome (toggle/search left, terminal/aux/settings right) now
   // lives in fixed corner overlays (see FolderLayoutShell) that never move on
@@ -383,7 +371,6 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
   // animating after its column had moved (picking a nested file in search
   // opens the aux panel and the first file tab within one slide), and a fresh
   // mount starts at its final width.
-  const convHoldsRight = conversationFillsArea
   const fileHoldsRight = mode === "fusion"
   const fileHoldsLeft = filesMaximized
 
@@ -426,50 +413,10 @@ function WorkspaceContent({ children }: { children: React.ReactNode }) {
                 )}
                 inert={filesMaximized || undefined}
               >
-                {/* Conversation column top bar (UNSPLIT only): the tab strip,
-                  plus a left reserve (this column always holds the window's
-                  left corner; it is 0 wide while the sidebar covers it) and a
-                  right reserve (mounted only while this column is the window's
-                  right edge — conversation mode, or maximized over the file
-                  column; 0 wide while the aux panel
-                  covers it) for the fixed corner overlays — both slide with
-                  their panel's toggle (ChromeReserve). The detail header +
-                  tiles render inside {children}, directly below. `bg-muted`
-                  shades the strip like a browser tab bar (matching the bottom
-                  StatusBar) — the active tab (bg-background) reads as a white
-                  tab seated on it, with reverse bottom corners. With a
-                  workspace background image on,
-                  the strip + every tab go transparent (reveal the image); a
-                  hairline bottom border (ws-strip-line) runs under the reserves
-                  and inactive tabs while the active tab omits it and the border
-                  arches over its top (the active browser-tab-item's `::after`)
-                  instead. While SPLIT this row disappears entirely (no blank
-                  drag strip above the shells): each group shell hosts its own
-                  strip whose tail spacer is a window-drag region, and the
-                  TOP-edge strips re-create the corner reserves themselves (see
-                  SplitStripCornerReserve in conversation-detail-panel). */}
-                {!isConvSplit && (
-                  <div className="flex h-10 shrink-0 items-stretch bg-muted ws-transparent-bg">
-                    <ChromeReserve width={leftCornerWidth} />
-                    <div className="flex min-w-0 flex-1 items-stretch">
-                      {showConvStrip ? (
-                        // The unsplit strip IS the column's top-right strip,
-                        // so it carries the maximize/restore button.
-                        <TabBar maximizeControl />
-                      ) : (
-                        // No tabs → TabBar renders null; keep a drag region so
-                        // the title bar can still move the window.
-                        <div
-                          data-tauri-drag-region
-                          className="h-full min-w-0 flex-1 ws-strip-line"
-                        />
-                      )}
-                    </div>
-                    {convHoldsRight && (
-                      <ChromeReserve width={rightCornerWidth} />
-                    )}
-                  </div>
-                )}
+                {/* Conversation tabs used to sit in an h-10 strip here. The
+                    sidebar already switches conversations, so that row is gone.
+                    The detail header is the column's top edge and reserves the
+                    corner overlays itself. */}
                 {/* Pane activation lives on the CONTENT, not the top bar: clicking
                   edge chrome (terminal/settings/toggles) or grabbing a drag
                   region stays pane-neutral so it never hijacks close-tab /

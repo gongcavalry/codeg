@@ -69,10 +69,7 @@ import {
   createDelegationStatusIndexer,
   type DelegationStatusTaskRef,
 } from "@/lib/delegation-status-index"
-import {
-  MessageThread,
-  MessageThreadScrollButton,
-} from "@/components/ai-elements/message-thread"
+import { MessageThread } from "@/components/ai-elements/message-thread"
 import {
   Message,
   MessageContent,
@@ -1910,7 +1907,6 @@ export function MessageListView({
   const loadedUserMessages = useMemo(() => {
     const threadIndexByTurnId = new Map<string, number>()
     let count = 0
-    if (!insightsInSidebar) return { count, threadIndexByTurnId }
     for (let i = 0; i < threadItems.length; i++) {
       const item = threadItems[i]
       if (item.kind === "turn" && item.group.role === "user") {
@@ -1919,7 +1915,7 @@ export function MessageListView({
       }
     }
     return { count, threadIndexByTurnId }
-  }, [insightsInSidebar, threadItems])
+  }, [threadItems])
 
   // A long conversation is loaded a window at a time (reverse infinite
   // scroll), but the navigator covers all of it: the window reports how many
@@ -1981,7 +1977,6 @@ export function MessageListView({
   const [viewportTop, setViewportTop] = useState<ViewportTop | null>(null)
   // Forgotten once nobody shows the rows, so showing them again never starts
   // from where the view was back then.
-  if (!navDemanded && viewportTop !== null) setViewportTop(null)
   // The last message the outline lists: the one whose replies the loaded
   // window starts with, when it starts inside a round.
   const earlierRoundTurnId = useMemo(() => {
@@ -2075,6 +2070,19 @@ export function MessageListView({
   }, [insightsInSidebar, conversationId, insightsOwner])
 
   const hasRenderableContent = threadItems.length > 0 || Boolean(liveMessage)
+  const promptAnchor = viewportTop?.atEnd
+    ? threadItems.length
+    : (viewportTop?.index ?? threadItems.length)
+  const promptNeighbors = userPromptNeighbors(
+    [...loadedUserMessages.threadIndexByTurnId.values()],
+    promptAnchor
+  )
+  const jumpToUserPrompt = (threadIndex: number) => {
+    scrollApiRef.current?.scrollToIndex(threadIndex, {
+      align: "start",
+      smooth: chatAnimations,
+    })
+  }
 
   if (detailLoading && !hasRenderableContent) {
     return (

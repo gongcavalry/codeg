@@ -62,20 +62,22 @@ import {
   loadNavItemVisibility,
   loadTagFilter,
   saveTagFilter,
+  loadListMode,
   loadShowCompleted,
-  loadShowRecent,
   loadShowWorktrees,
   loadSortMode,
   loadSectionOrder,
-  moveSectionInOrder,
+  moveVisibleSection,
+  saveListMode,
   saveNavItemVisibility,
   saveShowCompleted,
-  saveShowRecent,
   saveShowWorktrees,
   saveSortMode,
   saveSectionOrder,
+  DEFAULT_LIST_MODE,
   DEFAULT_SECTION_ORDER,
   SIDEBAR_NAV_ITEM_IDS,
+  type SidebarListMode,
   type SidebarNavItemId,
   type SidebarNavItemVisibility,
   type SidebarSectionId,
@@ -139,12 +141,14 @@ function SidebarNavButton({
   onClick,
   active,
   trailing,
+  className,
 }: {
   icon: LucideIcon
   label: string
   onClick: () => void
   active?: boolean
   trailing?: ReactNode
+  className?: string
 }) {
   return (
     <button
@@ -157,7 +161,8 @@ function SidebarNavButton({
         "text-[0.875rem] text-sidebar-foreground outline-none",
         "transition-colors duration-150 hover:bg-sidebar-accent",
         "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-        active && "bg-sidebar-primary/8"
+        active && "bg-sidebar-primary/8",
+        className
       )}
     >
       <Icon className="h-[0.875rem] w-[0.875rem] shrink-0 text-muted-foreground" />
@@ -187,13 +192,13 @@ export function Sidebar() {
   // rem-sized overlay buttons. Mobile has no overlay (the sidebar is a Drawer).
   const leftReserve = leftChromeReserve(platformIsMac && isDesktop(), zoomLevel)
 
-  // `showCompleted` defaults OFF; `showWorktrees` and `showRecent` default ON
-  // (the mount effect below reconciles a persisted override). Each initial
-  // value matches its own default so the pre-hydration render doesn't flash as
-  // the stored preference is applied.
+  // `showCompleted` defaults OFF; `showWorktrees` defaults ON; the list under
+  // Pinned defaults to folders (the mount effect below reconciles a persisted
+  // override). Each initial value matches its own default so the pre-hydration
+  // render doesn't flash as the stored preference is applied.
   const [showCompleted, setShowCompleted] = useState(false)
   const [showWorktrees, setShowWorktrees] = useState(true)
-  const [showRecent, setShowRecent] = useState(true)
+  const [listMode, setListMode] = useState<SidebarListMode>(DEFAULT_LIST_MODE)
   // Empty = every nav row shown, which is also the hydrated default — so the
   // pre-hydration render matches for a user who never hid one.
   const [navItems, setNavItems] = useState<SidebarNavItemVisibility>({})
@@ -267,9 +272,9 @@ export function Sidebar() {
     saveShowWorktrees(value)
   }, [])
 
-  const handleSetShowRecent = useCallback((value: boolean) => {
-    setShowRecent(value)
-    saveShowRecent(value)
+  const handleSetListMode = useCallback((value: SidebarListMode) => {
+    setListMode(value)
+    saveListMode(value)
   }, [])
 
   const handleSetNavItem = useCallback(
@@ -486,13 +491,6 @@ export function Sidebar() {
                   >
                     {t("showWorktrees")}
                   </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={showRecent}
-                    onCheckedChange={handleSetShowRecent}
-                    onSelect={(event) => event.preventDefault()}
-                  >
-                    {t("showRecent")}
-                  </DropdownMenuCheckboxItem>
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
               <DropdownMenuSub>
@@ -576,6 +574,7 @@ export function Sidebar() {
           hover / keyboard focus. */}
       <div className="flex shrink-0 flex-col gap-0.5 px-1.5 pt-1.5">
         <SidebarNavButton
+          className="codeg-dsh-new-chat"
           icon={SquarePen}
           label={t("newChat")}
           onClick={handleNewConversation}
@@ -720,7 +719,7 @@ export function Sidebar() {
           ref={listRef}
           showCompleted={showCompleted}
           showWorktrees={showWorktrees}
-          showRecent={showRecent}
+          listMode={listMode}
           sortMode={sortMode}
           sectionOrder={sectionOrder}
           tagFilter={tagFilter}

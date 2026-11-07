@@ -1,0 +1,143 @@
+/* 8900 neon-lime poster, compiled into the desktop bundle.
+   html:root, not an attribute selector: Tailwind's parser in globals.css
+   drops every rule after html[data-theme]. This file is imported after it. */
+
+html:root {
+  --dut-paper: #ffffff;
+  --dut-ink: #101418;
+  --dut-lime: #c6ff00;
+  --dut-accent: #c15f3c;
+  --dut-bubble: #ffe3d9;
+  --dut-shadow: #101418;
+  --background: #ffffff;
+  --foreground: #101418;
+  --card: #ffffff;
+  --card-foreground: #101418;
+  --popover: #ffffff;
+  --popover-foreground: #101418;
+  --primary: #c15f3c;
+  --primary-foreground: #ffffff;
+  --secondary: #fafbfc;
+  --secondary-foreground: #101418;
+  --muted: #f7f8f9;
+  --muted-foreground: #7a8791;
+  --accent: #ffe3d9;
+  --accent-foreground: #101418;
+  --border: rgba(16, 20, 24, 0.12);
+  --input: rgba(16, 20, 24, 0.16);
+  --ring: #c15f3c;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #101418;
+  --sidebar-primary: #c15f3c;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #dcff4d;
+  --sidebar-accent-foreground: #101418;
+  --sidebar-border: rgba(16, 20, 24, 0.1);
+  --sidebar-ring: #c15f3c;
+  --activity-accent: #c15f3c;
+  color-scheme: light;
+}
+
+html:root.dark {
+  --dut-paper: #0b0d10;
+  --dut-ink: rgba(232, 236, 239, 0.42);
+  --dut-lime: #c6ff00;
+  --dut-accent: #d97757;
+  --dut-bubble: #35201a;
+  --dut-shadow: rgba(232, 236, 239, 0.16);
+  --background: #0b0d10;
+  --foreground: #f2f5f3;
+  --card: #14181d;
+  --card-foreground: #f2f5f3;
+  --popover: #161c22;
+  --popover-foreground: #f2f5f3;
+  --primary: #d97757;
+  --primary-foreground: #101418;
+  --secondary: #14181d;
+  --secondary-foreground: #f2f5f3;
+  --muted: #171d24;
+  --muted-foreground: #7f8d97;
+  --accent: #35201a;
+  --accent-foreground: #f2f5f3;
+  --border: rgba(255, 255, 255, 0.12);
+  --input: rgba(255, 255, 255, 0.16);
+  --ring: #d97757;
+  --sidebar: #0b0d10;
+  --sidebar-foreground: #f2f5f3;
+  --sidebar-primary: #c6ff00;
+  --sidebar-primary-foreground: #101418;
+  --sidebar-accent: #1e252c;
+  --sidebar-accent-foreground: #f2f5f3;
+  --sidebar-border: rgba(255, 255, 255, 0.12);
+  --sidebar-ring: #c6ff00;
+  --activity-accent: #d97757;
+  color-scheme: dark;
+}
+
+.is-user .ws-msg-secondary {
+  background: var(--dut-bubble) !important;
+  color: var(--foreground) !important;
+  border-radius: 16px !important;
+  font-size: 17px !important;
+  line-height: 1.65 !important;
+}
+
+.is-assistant .ws-msg-secondary {
+  font-size: 17px !important;
+  line-height: 1.65 !important;
+}
+
+.codeg-composer-chrome {
+  border: 2px solid var(--dut-ink) !important;
+  border-radius: 12px !important;
+  background: var(--dut-paper) !important;
+  box-shadow: 5px 5px 0 var(--dut-shadow) !important;
+}
+
+.codeg-dsh-new-chat {
+  height: auto !important;
+  border-radius: 10px !important;
+  border: 2px solid var(--dut-ink) !important;
+  background: var(--dut-lime) !important;
+  color: #101418 !important;
+  box-shadow: 3px 3px 0 var(--dut-shadow) !important;
+}
+
+.codeg-dsh-new-chat:hover {
+  background: #d4ff33 !important;
+  color: #101418 !important;
+}
+
+.codeg-dsh-new-chat svg {
+  color: #101418 !important;
+}
+
+html:root.dark .codeg-dsh-new-chat,
+html:root.dark .codeg-dsh-new-chat:hover {
+  background: var(--dut-paper) !important;
+  color: var(--dut-lime) !important;
+  border-color: var(--dut-lime) !important;
+  box-shadow: 3px 3px 0 var(--dut-lime) !important;
+}
+
+html:root.dark .codeg-dsh-new-chat svg {
+  color: var(--dut-lime) !important;
+}
+
+.is-assistant pre {
+  border: 2px solid var(--dut-ink) !important;
+  border-radius: 10px !important;
+  background: var(--dut-paper) !important;
+  box-shadow: 5px 5px 0 var(--dut-shadow) !important;
+  font-size: 20px !important;
+}
+
+.is-assistant :not(pre) > code,
+.is-assistant a {
+  color: var(--dut-accent) !important;
+}
+
+.is-assistant table th {
+  background: var(--dut-ink) !important;
+  color: var(--dut-accent) !important;
+}

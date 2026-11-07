@@ -915,3 +915,24 @@ describe("SidebarConversationCard — assistant sub-sessions", () => {
     expect(probe.agentIconRenders).toBe(before)
   })
 })
+
+describe("SidebarConversationCard model chip", () => {
+  it("paints the 8900 mark in front of the title", () => {
+    const { container } = renderWithIntl(
+      <CardList
+        conversations={[{ ...conv(1), model: "grok-4.7" }]}
+        now={NOW}
+      />
+    )
+    const chip = container.querySelector("[data-session-model-mark]")
+    expect(chip).toHaveTextContent("GK")
+    expect(chip).toHaveAttribute("title", "grok-4.7")
+  })
+
+  it("draws no chip when the session never recorded a model", () => {
+    const { container } = renderWithIntl(
+      <CardList conversations={[conv(1)]} now={NOW} />
+    )
+    expect(container.querySelector("[data-session-model-mark]")).toBeNull()
+  })
+})

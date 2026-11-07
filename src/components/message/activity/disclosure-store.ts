@@ -2,6 +2,8 @@
 
 import { useCallback, useSyncExternalStore } from "react"
 
+import { useKeepActivityExpanded } from "@/hooks/use-appearance"
+
 /**
  * Open/closed state of every expandable activity row, kept OUTSIDE the
  * component tree.
@@ -63,13 +65,15 @@ export function useDisclosure(
   key: string,
   opts: { defaultOpen: boolean; force?: boolean }
 ): [boolean, (open: boolean) => void] {
+  const { keepActivityExpanded } = useKeepActivityExpanded()
   const choice = useSyncExternalStore(
     subscribe,
     () => choices.get(key),
     () => undefined
   )
   if (opts.force) latch(key)
-  const open = choice ?? (latched.has(key) || opts.defaultOpen)
+  const open =
+    choice ?? (latched.has(key) || keepActivityExpanded || opts.defaultOpen)
   const setOpen = useCallback(
     (next: boolean) => {
       remember(key, next)

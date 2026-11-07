@@ -187,6 +187,11 @@
       "sectionDescription": "The Code Development / Office Work shortcut cards shown above the composer on the new conversation page.",
       "showQuickActions": "Show on the new conversation page"
     },
+    "activityPanel": {
+      "sectionTitle": "Conversation activity",
+      "sectionDescription": "Thinking and tool calls collapse into a bar when they finish. Keep them expanded, with quieter inline styling.",
+      "keepExpanded": "Keep thinking and tool calls expanded"
+    },
     "chatAnimations": {
       "sectionTitle": "Chat animations",
       "sectionDescription": "Entrance, expand/collapse, tool-call and working-status animations in the conversation area, plus smooth scrolling. Turn off for instant, motion-free updates. Spinners keep rotating.",
@@ -2215,6 +2220,9 @@
       "showCompleted": "Show completed conversations",
       "showWorktrees": "Show worktree branches",
       "showRecent": "Show Recent group",
+      "listModeSwitch": "Conversation list layout",
+      "listModeFolders": "Folders",
+      "listModeRecent": "Recent",
       "tabsFollowFolder": "Tabs follow folder",
       "tabsFollowFolderHint": "Show only the selected folder's conversation and file tabs. Click a folder to switch.",
       "toggleFolderExpanded": "Expand or collapse folder",
@@ -3802,6 +3810,9 @@
         "tokenCacheWrite": "Cache write",
         "completedAt": "Completed at",
         "jumpToPreviousUserMessage": "Jump to user message",
+        "promptRailPrevious": "Previous message I sent",
+        "promptRailNext": "Next message I sent",
+        "promptRailBottom": "Jump to the bottom",
         "showMore": "Show more",
         "showLess": "Show less",
         "resizeWidth": "Drag to resize the chat width · double-click to reset"
@@ -3811,7 +3822,12 @@
         "elapsedMinutes": "{value}m",
         "elapsedSeconds": "{value}s",
         "outputSpeedAria": "Estimated output speed",
-        "outputSpeedTooltip": "Estimated output speed (text + thinking)"
+        "outputSpeedTooltip": "Estimated output speed (text + thinking)",
+        "filesChanged": "{count, plural, one {# file changed} other {# files changed}}",
+        "linesChanged": "{additions} lines added, {deletions} removed",
+        "editStatsAria": "This turn's edits",
+        "editStatsTooltip": "{files, plural, one {# file changed} other {# files changed}} this turn — {additions} lines added, {deletions} removed",
+        "outputSpeedValue": "{value} tokens/sec"
       },
       "jsonTree": {
         "viewRaw": "Show raw JSON",

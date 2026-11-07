@@ -741,6 +741,46 @@ describe("buildRows", () => {
     ).toEqual(["folders", "chats"])
   })
 
+  it("listMode folders hides Recent even when showRecent is on, and keeps Pinned", () => {
+    const pinned = conv(1, 10, { pinned_at: new Date(2000).toISOString() })
+    const rows = buildRows({
+      pinned: [pinned],
+      pinnedExpanded: true,
+      orderedFolderIds: [10],
+      byFolder: new Map([[10, [conv(2, 10)]]]),
+      folderExpanded: { 10: true },
+      folderTotalCounts: new Map([[10, 1]]),
+      foldersExpanded: true,
+      chatConversations: [conv(3, 99)],
+      chatsExpanded: true,
+      recentConversations: [conv(2, 10), conv(3, 99)],
+      showRecent: true,
+      listMode: "folders",
+    })
+    expect(sectionSequence(rows)).toEqual(["pinned", "folders", "chats"])
+  })
+
+  it("listMode recent emits only Pinned and Recent", () => {
+    const pinned = conv(1, 10, { pinned_at: new Date(2000).toISOString() })
+    const rows = buildRows({
+      pinned: [pinned],
+      pinnedExpanded: true,
+      orderedFolderIds: [10],
+      byFolder: new Map([[10, [conv(2, 10)]]]),
+      folderExpanded: { 10: true },
+      folderTotalCounts: new Map([[10, 1]]),
+      foldersExpanded: true,
+      chatConversations: [conv(3, 99)],
+      chatsExpanded: true,
+      recentConversations: [conv(2, 10)],
+      showRecent: false,
+      listMode: "recent",
+      sectionOrder: ["folders", "chats", "recent"],
+    })
+    expect(sectionSequence(rows)).toEqual(["pinned", "recent"])
+    expect(rows.some((row) => row.kind === "folder")).toBe(false)
+  })
+
   it("normalizes a partial or repeated sectionOrder into a full permutation", () => {
     const rows = buildRows({
       pinned: [],

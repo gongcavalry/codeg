@@ -20,6 +20,7 @@ import { ActivityHeader } from "./activity/activity-header"
 import { useActivityLive } from "./activity/activity-live-context"
 import { openDisclosures } from "./activity/disclosure-store"
 import { useFoldBack } from "./activity/fold-back"
+import { useKeepActivityExpanded } from "@/hooks/use-appearance"
 import { WorkingMark } from "./activity/rail-icon"
 import { ReplyMotion } from "./reply-motion"
 
@@ -103,6 +104,7 @@ export const CompletedTurnContent = memo(function CompletedTurnContent({
   pending?: boolean
 }) {
   const tElapsed = useTranslations("Folder.chat.liveTurnStats")
+  const { keepActivityExpanded } = useKeepActivityExpanded()
   const split = useMemo(() => splitAssistantTurnParts(parts), [parts])
 
   const [localOpen, setLocalOpen] = useState(() => {
@@ -112,7 +114,8 @@ export const CompletedTurnContent = memo(function CompletedTurnContent({
     // an explicit act. Normally `currentRound` covers the live reply, but a
     // host that tracks no rounds at all (the delegation-child viewer) leans on
     // this, and it keeps the component honest on its own.
-    return !completed
+    // keepActivityExpanded keeps settled thinking and tool work visible.
+    return keepActivityExpanded || !completed
   })
 
   // Derived-state-during-render, not an effect: the fold has to be settled in
@@ -125,8 +128,9 @@ export const CompletedTurnContent = memo(function CompletedTurnContent({
       // A new user message folds everything above it, including whatever the
       // reader had opened by hand. Everything above is settled by definition;
       // the `!completed` case is steering (a send lands mid-reply), where the
-      // reply being written must stay open.
-      setLocalOpen(!completed)
+      // reply being written must stay open. keepActivityExpanded opts out of
+      // that auto-fold so looking back still shows thinking and tool work.
+      setLocalOpen(keepActivityExpanded || !completed)
     } else if (foldMark.currentRound && !currentRound) {
       // A newer round took over this position without a send in between (a
       // background/loop turn). Carry the outgoing round's expansion into local

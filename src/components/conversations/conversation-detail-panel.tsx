@@ -87,7 +87,6 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { usePlatform } from "@/hooks/use-platform"
 import { useZoomLevel } from "@/hooks/use-appearance"
 import { isDesktop } from "@/lib/platform"
-import { ChromeReserve } from "@/components/layout/chrome-reserve"
 import { leftChromeReserve, rightChromeReserve } from "@/lib/window-chrome"
 import {
   acpFork,
@@ -2563,44 +2562,30 @@ const ConversationTabView = memo(function ConversationTabView({
 // tolerance — ratio math can land a hair off exact 0 / 100.
 const GROUP_EDGE_EPSILON = 0.1
 
-/**
- * Corner reserve for a TOP-EDGE split-group strip. While split there is no
- * dedicated title-bar row above the shells (the workspace layout drops it
- * entirely instead of leaving a blank drag strip), so the strips along the
- * window's top edge must reserve the fixed corner overlays' width themselves —
- * exactly what the unsplit strip row does: left for LeftEdgeChrome while the
- * sidebar is collapsed (the conversation column then owns the window's left
- * edge), right for RightEdgeChrome while the column owns the right edge (aux
- * panel closed + conversation mode, or the column maximized over the file
- * column). Like that row, the reserve is mounted while its column holds the
- * corner — the right one only then; a mode switch or a maximize toggle snaps
- * the layout — and sized by the side panel over the corner, so a sidebar/aux
- * toggle slides it (ChromeReserve). Mobile shows the full-width FolderTitleBar
- * instead of corner overlays — no reserve. Self-subscribed so sidebar/aux/zoom
- * toggles re-render these slivers, not the whole panel.
- */
-function SplitStripCornerReserve({ side }: { side: "left" | "right" }) {
+/** Space the title row leaves for the floating corner buttons, now that the
+ *  conversation tab strip no longer sits above it. Left clears the sidebar
+ *  toggle when the sidebar is collapsed; right clears the window buttons when
+ *  this column is the window's right edge. */
+function useConversationChromePad(): { left: number; right: number } {
   const isMobile = useIsMobile()
   const { isOpen: sidebarOpen } = useSidebarContext()
   const { isOpen: auxOpen } = useAuxPanelContext()
   const { mode, conversationMaximized } = useWorkspaceView()
   const { isMac, isWindows, isLinux } = usePlatform()
   const { zoomLevel } = useZoomLevel()
-  if (isMobile) return null
+  if (isMobile) return { left: 0, right: 0 }
   const holdsRight = mode === "conversation" || conversationMaximized
-  if (side === "right" && !holdsRight) return null
-  const width =
-    side === "left"
-      ? sidebarOpen
+  return {
+    left: sidebarOpen ? 0 : leftChromeReserve(isMac && isDesktop(), zoomLevel),
+    right:
+      !holdsRight || auxOpen
         ? 0
-        : leftChromeReserve(isMac && isDesktop(), zoomLevel)
-      : auxOpen
-        ? 0
-        : rightChromeReserve(isDesktop() && (isWindows || isLinux), zoomLevel)
-  return <ChromeReserve width={width} />
+        : rightChromeReserve(isDesktop() && (isWindows || isLinux), zoomLevel),
+  }
 }
 
 export function ConversationDetailPanel() {
+  const chromePad = useConversationChromePad()
   const t = useTranslations("Folder.conversation")
   const tDetails = useTranslations("Folder.sessionDetails")
   const {
@@ -3083,18 +3068,6 @@ export function ConversationDetailPanel() {
           pointerEvents: inScope ? undefined : "none",
         }}
       >
-        {/* While split, each group owns its own strip (the workspace layout's
-            title-bar row is gone entirely), and the TOP-edge strips add the
-            corner reserves that row normally carries. The top-right one also
-            takes over the unsplit strip's maximize/restore button — the
-            column has one, so only one strip may carry it. */}
-        {isSplit && (
-          <div className="flex h-10 shrink-0 items-stretch bg-muted ws-transparent-bg">
-            {touchesLeft && <SplitStripCornerReserve side="left" />}
-            <TabBar groupId={groupId} maximizeControl={touchesRight} />
-            {touchesRight && <SplitStripCornerReserve side="right" />}
-          </div>
-        )}
         {isSplit && selTab && (
           <div
             className="shrink-0"
@@ -3116,6 +3089,14 @@ export function ConversationDetailPanel() {
               folderPath={selTabFolder?.path}
               title={selTab.title}
               status={selTab.status as ConversationStatus | undefined}
+              chromePad={
+                touchesTop
+                  ? {
+                      left: touchesLeft ? chromePad.left : 0,
+                      right: touchesRight ? chromePad.right : 0,
+                    }
+                  : undefined
+              }
             />
           </div>
         )}
@@ -3168,6 +3149,7 @@ export function ConversationDetailPanel() {
             folderPath={activeTabFolder?.path}
             title={activeTab.title}
             status={activeTab.status as ConversationStatus | undefined}
+            chromePad={chromePad}
           />
         )}
         <ContextMenu>

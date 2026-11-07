@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  Eye,
   LayoutGrid,
   Monitor,
   Moon,
@@ -27,6 +28,7 @@ import {
   useThemeColor,
   useZoomLevel,
   useWelcomeQuickActions,
+  useKeepActivityExpanded,
   useChatAnimationsSetting,
   useChatContentWidth,
 } from "@/hooks/use-appearance"
@@ -68,6 +70,8 @@ export function AppearanceSettings() {
   const { zoomLevel, setZoomLevel } = useZoomLevel()
   const { showWelcomeQuickActions, setShowWelcomeQuickActions } =
     useWelcomeQuickActions()
+  const { keepActivityExpanded, setKeepActivityExpanded } =
+    useKeepActivityExpanded()
   const { chatAnimations, setChatAnimations } = useChatAnimationsSetting()
   const { chatContentWidth, setChatContentWidth } = useChatContentWidth()
   const [screenWidth] = useState(readScreenWidth)
@@ -247,6 +251,30 @@ export function AppearanceSettings() {
 
         {/* ===== Workspace background ===== */}
         <WorkspaceBackgroundSection />
+
+        {/* ===== Conversation activity ===== */}
+        <section className="rounded-xl border bg-card p-4 space-y-4">
+          <div className="flex items-center gap-2">
+            <Eye className="h-4 w-4 text-muted-foreground" />
+            <h2 className="text-sm font-semibold">
+              {t("activityPanel.sectionTitle")}
+            </h2>
+          </div>
+
+          <p className="text-xs text-muted-foreground leading-5">
+            {t("activityPanel.sectionDescription")}
+          </p>
+
+          <label className="flex items-center gap-2">
+            <Switch
+              checked={keepActivityExpanded}
+              onCheckedChange={setKeepActivityExpanded}
+            />
+            <span className="text-xs text-muted-foreground">
+              {t("activityPanel.keepExpanded")}
+            </span>
+          </label>
+        </section>
 
         {/* ===== New conversation — mode selection area ===== */}
         <section className="rounded-xl border bg-card p-4 space-y-4">

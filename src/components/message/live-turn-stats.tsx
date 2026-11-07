@@ -28,11 +28,6 @@ interface LiveEditStats extends LineChangeStats {
   files: number
 }
 
-function formatCompactInt(n: number, formatter: Intl.NumberFormat): string {
-  if (n < 1000) return String(n)
-  return formatter.format(n)
-}
-
 function asObject(value: unknown): Record<string, unknown> | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null
   return value as Record<string, unknown>
@@ -317,14 +312,9 @@ export function LiveTurnStats({ message }: LiveTurnStatsProps) {
   const [elapsed, setElapsed] = useState(() => Date.now() - message.startedAt)
   const editStats = useMemo(() => extractLiveEditStats(message), [message])
   const tps = useTokenOutputSpeed(message)
-  const compactNumberFormatter = useMemo(
-    () =>
-      new Intl.NumberFormat(locale, {
-        notation: "compact",
-        maximumFractionDigits: 1,
-      }),
-    [locale]
-  )
+  // Line counts stay in full: compact notation rounds both sides toward the
+  // same figure and hides a whole-file rewrite.
+  const lineFormatter = useMemo(() => new Intl.NumberFormat(locale), [locale])
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -385,7 +375,7 @@ export function LiveTurnStats({ message }: LiveTurnStatsProps) {
                 aria-label={t("outputSpeedAria")}
                 className="h-3 w-3 shrink-0"
               />
-              {tps.toFixed(1)} tok/s
+              {t("outputSpeedValue", { value: tps.toFixed(1) })}
             </span>
           </>
         )}

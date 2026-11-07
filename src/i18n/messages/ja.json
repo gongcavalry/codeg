@@ -187,6 +187,11 @@
       "sectionDescription": "新しい会話ページで入力欄の上に表示される「コード開発 / 日常業務」のショートカットカードです。",
       "showQuickActions": "新しい会話ページに表示する"
     },
+    "activityPanel": {
+      "sectionTitle": "会話の経過",
+      "sectionDescription": "思考とツール操作は完了すると折りたたまれます。オンにすると展開したまま、落ち着いた本文スタイルで表示します。",
+      "keepExpanded": "思考と操作を常に展開する"
+    },
     "chatAnimations": {
       "sectionTitle": "チャットのアニメーション",
       "sectionDescription": "会話エリア内の折りたたみ/展開、ツール呼び出し、作業状態などのアニメーションとスムーズスクロールを制御します。オフにすると即時に更新されます。スピナーは回転し続けます。",
@@ -2215,6 +2220,9 @@
       "showCompleted": "完了した会話を表示",
       "showWorktrees": "ワークツリーブランチを表示",
       "showRecent": "「最近」グループを表示",
+      "listModeSwitch": "会話の並べ方",
+      "listModeFolders": "フォルダ",
+      "listModeRecent": "最近",
       "tabsFollowFolder": "タブをフォルダーに追従",
       "tabsFollowFolderHint": "選択したフォルダーの会話タブとファイルタブだけを表示します。フォルダーをクリックすると切り替わります。",
       "toggleFolderExpanded": "フォルダーを展開・折りたたむ",
@@ -3802,6 +3810,9 @@
         "tokenCacheWrite": "キャッシュ書込",
         "completedAt": "完了時刻",
         "jumpToPreviousUserMessage": "前のユーザーメッセージへ",
+        "promptRailPrevious": "ひとつ前の自分の発言",
+        "promptRailNext": "次の自分の発言",
+        "promptRailBottom": "一番下へ",
         "showMore": "もっと見る",
         "showLess": "折りたたむ",
         "resizeWidth": "ドラッグでチャット幅を調整 · ダブルクリックで元に戻す"
@@ -3811,7 +3822,12 @@
         "elapsedMinutes": "{value}分",
         "elapsedSeconds": "{value}秒",
         "outputSpeedAria": "推定出力速度",
-        "outputSpeedTooltip": "推定出力速度（テキスト + 思考）"
+        "outputSpeedTooltip": "推定出力速度（テキスト + 思考）",
+        "filesChanged": "{count} 個のファイルを変更",
+        "linesChanged": "{additions} 行追加、{deletions} 行削除",
+        "editStatsAria": "このターンの変更",
+        "editStatsTooltip": "このターンは {files} 個のファイルを変更 — {additions} 行追加、{deletions} 行削除",
+        "outputSpeedValue": "{value} token/秒"
       },
       "jsonTree": {
         "viewRaw": "生の JSON を表示",

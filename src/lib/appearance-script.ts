@@ -19,6 +19,9 @@ export const STORAGE_KEY_ZOOM_LEVEL = "codeg-zoom-level"
 // 缺省即回退为开启（保持历史行为）；仅在欢迎态客户端渲染，无需预水合。
 export const STORAGE_KEY_WELCOME_QUICK_ACTIONS = "codeg-welcome-quick-actions"
 
+// 会话里思考内容和工具操作是否保持展开。缺省开启：跑完不再自动收成一条折叠条。
+export const STORAGE_KEY_KEEP_ACTIVITY_EXPANDED = "codeg-keep-activity-expanded"
+
 // 聊天区域动画（新消息滚动、折叠展开、工具调用、工作状态等）总开关。
 // 缺省即开启；"0" 时给 <html> 打 data-chat-animations="off"，由 globals.css 在
 // .chat-motion-scope 内禁用动画。需预水合，避免会话首屏先播一遍动画。
