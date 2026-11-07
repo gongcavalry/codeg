@@ -2675,7 +2675,13 @@
         "already_linked": "이미 연결되어 있습니다",
         "name_unavailable": "이 폴더에 사용할 수 있는 이름이 없습니다",
         "alreadyLinkedAs": "{name}(으)로 이미 연결되어 있습니다"
-      }
+      },
+      "nameRootTitle": "폴더에 중국어 이름 지정",
+      "nameRootDescription": "사이드바 배지는 이름의 첫 두 글자를 사용하므로 중국어(한자 2자 이상)여야 합니다.",
+      "nameRootPlaceholder": "예: 工具",
+      "nameRootSave": "저장 후 계속",
+      "nameRootInvalid": "한자가 2자 이상 필요합니다",
+      "nameRootSaveFailed": "폴더 이름 저장 실패"
     },
     "folderNameDropdown": {
       "fallbackFolderName": "폴더",

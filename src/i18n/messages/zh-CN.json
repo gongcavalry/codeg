@@ -2675,7 +2675,13 @@
         "already_linked": "已经关联过",
         "name_unavailable": "该文件夹已无可用的名称",
         "alreadyLinkedAs": "已作为 {name} 关联"
-      }
+      },
+      "nameRootTitle": "给目录起个中文名",
+      "nameRootDescription": "侧栏徽标取这个名字的前两个字，所以必须用中文（至少两个汉字）。",
+      "nameRootPlaceholder": "例如：工具",
+      "nameRootSave": "保存并继续",
+      "nameRootInvalid": "至少需要两个汉字",
+      "nameRootSaveFailed": "目录名保存失败"
     },
     "folderNameDropdown": {
       "fallbackFolderName": "文件夹",

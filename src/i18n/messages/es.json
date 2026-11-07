@@ -2675,7 +2675,13 @@
         "already_linked": "Ya está vinculada",
         "name_unavailable": "No queda ningún nombre libre para esta carpeta",
         "alreadyLinkedAs": "Ya vinculada como {name}"
-      }
+      },
+      "nameRootTitle": "Dar un nombre chino a la carpeta",
+      "nameRootDescription": "La insignia de la barra lateral toma los dos primeros caracteres de este nombre, así que debe ser chino (al menos dos caracteres CJK).",
+      "nameRootPlaceholder": "p. ej. 工具",
+      "nameRootSave": "Guardar y continuar",
+      "nameRootInvalid": "Se requieren al menos dos caracteres CJK",
+      "nameRootSaveFailed": "Error al guardar el nombre de la carpeta"
     },
     "folderNameDropdown": {
       "fallbackFolderName": "Carpeta",

@@ -2675,7 +2675,13 @@
         "already_linked": "مرتبط بالفعل",
         "name_unavailable": "لم يتبق اسم متاح لهذا المجلد",
         "alreadyLinkedAs": "مرتبط بالفعل باسم {name}"
-      }
+      },
+      "nameRootTitle": "إعطاء المجلد اسماً صينياً",
+      "nameRootDescription": "شارة الشريط الجانبي تأخذ أول حرفين من هذا الاسم، لذا يجب أن يكون صينياً (حرفان صينيان على الأقل).",
+      "nameRootPlaceholder": "مثال: 工具",
+      "nameRootSave": "حفظ ومتابعة",
+      "nameRootInvalid": "مطلوب حرفان صينيان على الأقل",
+      "nameRootSaveFailed": "فشل حفظ اسم المجلد"
     },
     "folderNameDropdown": {
       "fallbackFolderName": "مجلد",

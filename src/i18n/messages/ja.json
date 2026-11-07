@@ -2675,7 +2675,13 @@
         "already_linked": "既にリンク済みです",
         "name_unavailable": "このフォルダーに使える名前が残っていません",
         "alreadyLinkedAs": "{name} として既にリンク済みです"
-      }
+      },
+      "nameRootTitle": "フォルダに中国語名を付ける",
+      "nameRootDescription": "サイドバーのバッジは名前の最初の2文字を使うため、中国語（漢字2文字以上）が必要です。",
+      "nameRootPlaceholder": "例：工具",
+      "nameRootSave": "保存して続行",
+      "nameRootInvalid": "漢字が2文字以上必要です",
+      "nameRootSaveFailed": "フォルダ名の保存に失敗しました"
     },
     "folderNameDropdown": {
       "fallbackFolderName": "フォルダ",

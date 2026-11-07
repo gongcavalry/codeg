@@ -2675,7 +2675,13 @@
         "already_linked": "已經連結過",
         "name_unavailable": "該資料夾已無可用的名稱",
         "alreadyLinkedAs": "已作為 {name} 連結"
-      }
+      },
+      "nameRootTitle": "幫目錄取個中文名",
+      "nameRootDescription": "側欄徽標取這個名字的前兩個字，所以必須用中文（至少兩個漢字）。",
+      "nameRootPlaceholder": "例如：工具",
+      "nameRootSave": "儲存並繼續",
+      "nameRootInvalid": "至少需要兩個漢字",
+      "nameRootSaveFailed": "目錄名稱儲存失敗"
     },
     "folderNameDropdown": {
       "fallbackFolderName": "資料夾",

@@ -2675,7 +2675,13 @@
         "already_linked": "Déjà lié",
         "name_unavailable": "Plus aucun nom disponible pour ce dossier",
         "alreadyLinkedAs": "Déjà lié sous le nom {name}"
-      }
+      },
+      "nameRootTitle": "Donner un nom chinois au dossier",
+      "nameRootDescription": "Le badge de la barre latérale prend les deux premiers caractères de ce nom : il doit être en chinois (au moins deux sinogrammes).",
+      "nameRootPlaceholder": "ex. 工具",
+      "nameRootSave": "Enregistrer et continuer",
+      "nameRootInvalid": "Au moins deux sinogrammes requis",
+      "nameRootSaveFailed": "Échec de l'enregistrement du nom du dossier"
     },
     "folderNameDropdown": {
       "fallbackFolderName": "Dossier",

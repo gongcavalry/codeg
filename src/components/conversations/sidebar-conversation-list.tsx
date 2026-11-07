@@ -1074,6 +1074,16 @@ export function SidebarConversationList({
     return reused
   }, [tabs])
 
+  // folder_id -> display name for the card's DSH-style folder chip. The chip
+  // reads the ALIAS first (工具/电商 — set via the folder header menu, or the
+  // required prompt when a folder is opened), falling back to the raw name.
+  // Depends only on `folders`, so status events never rebuild it.
+  const folderNames = useMemo(() => {
+    const map = new Map<number, string>()
+    for (const f of folders) map.set(f.id, f.alias?.trim() || f.name)
+    return map
+  }, [folders])
+
   const { sortedTypes: availableAgents, fresh: availableAgentsFresh } =
     useSortedAvailableAgents()
   const [folderExpanded, setFolderExpanded] = useState<Record<number, boolean>>(

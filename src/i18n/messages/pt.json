@@ -2675,7 +2675,13 @@
         "already_linked": "Já vinculada",
         "name_unavailable": "Não há mais nomes livres para esta pasta",
         "alreadyLinkedAs": "Já vinculada como {name}"
-      }
+      },
+      "nameRootTitle": "Dar um nome chinês à pasta",
+      "nameRootDescription": "O emblema da barra lateral usa os dois primeiros caracteres deste nome, por isso deve ser chinês (pelo menos dois caracteres CJK).",
+      "nameRootPlaceholder": "ex. 工具",
+      "nameRootSave": "Guardar e continuar",
+      "nameRootInvalid": "São necessários pelo menos dois caracteres CJK",
+      "nameRootSaveFailed": "Falha ao guardar o nome da pasta"
     },
     "folderNameDropdown": {
       "fallbackFolderName": "Pasta",

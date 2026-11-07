@@ -50,7 +50,12 @@ import {
   removeFolderLink,
   renameFolderLink,
   repairFolderLink,
+  updateFolderAlias,
 } from "@/lib/api"
+import {
+  folderNameMark,
+  hasChineseFolderMark,
+} from "@/lib/folder-name-mark"
 import { useImeGuard } from "@/hooks/use-ime-guard"
 import { isDesktop, openFileDialog } from "@/lib/platform"
 import { parentFsPath } from "@/lib/path-utils"
@@ -71,7 +76,7 @@ import type {
 } from "@/lib/types"
 import { useAppWorkspaceStore } from "@/stores/app-workspace-store"
 
-type View = "pick-root" | "links" | "add-targets"
+type View = "pick-root" | "name-root" | "links" | "add-targets"
 
 interface WorkspaceFolderDialogProps {
   open: boolean
@@ -123,6 +128,13 @@ export function WorkspaceFolderDialog({
   const [previewing, setPreviewing] = useState(false)
   const [creating, setCreating] = useState(false)
 
+  // BC patch: after opening a NEW root with no alias, the dialog detours
+  // through "name-root" and requires a Chinese display name (>= 2 CJK chars)
+  // before the links step — the sidebar chip reads the alias's first two
+  // chars and must never come out latin (老板 2026-11-07).
+  const [aliasInput, setAliasInput] = useState("")
+  const [aliasSaving, setAliasSaving] = useState(false)
+
   const [links, setLinks] = useState<FolderLinkDetail[]>([])
   const [loadingLinks, setLoadingLinks] = useState(false)
   const [gitExclude, setGitExclude] = useState(true)
@@ -156,6 +168,8 @@ export function WorkspaceFolderDialog({
     setOpeningRoot(false)
     setCreating(false)
     setPreviewing(false)
+    setAliasInput("")
+    setAliasSaving(false)
   }, [open, folder])
 
   const refreshLinks = useCallback(async (folderId: number) => {
@@ -183,7 +197,14 @@ export function WorkspaceFolderDialog({
         const detail = await openFolder(path)
         setRootFolder(detail)
         onFolderOpened?.(detail)
-        setView("links")
+        // A root that already carries an alias (re-opened, or named earlier)
+        // skips the naming gate.
+        if (!manageMode && !hasChineseFolderMark(detail.alias)) {
+          setAliasInput(detail.alias?.trim() ?? "")
+          setView("name-root")
+        } else {
+          setView("links")
+        }
       } catch (err) {
         toast.error(t("openFailed"), { description: toErrorMessage(err) })
       } finally {
@@ -208,6 +229,26 @@ export function WorkspaceFolderDialog({
     const path = Array.isArray(selected) ? selected[0] : selected
     if (path) setRootPath(path)
   }, [])
+
+  // ── Step 1b: required Chinese display name (BC patch) ────────────────────
+
+  const aliasValid = hasChineseFolderMark(aliasInput)
+  const aliasMark = folderNameMark(aliasInput)
+
+  const handleSaveRootAlias = useCallback(async () => {
+    if (!rootFolder || !aliasValid || aliasSaving) return
+    setAliasSaving(true)
+    try {
+      await updateFolderAlias(rootFolder.id, aliasInput.trim())
+      setView("links")
+    } catch (err) {
+      toast.error(t("nameRootSaveFailed"), {
+        description: toErrorMessage(err),
+      })
+    } finally {
+      setAliasSaving(false)
+    }
+  }, [rootFolder, aliasValid, aliasSaving, aliasInput, t])
 
   // ── Step 2: link targets ──────────────────────────────────────────────────
 
@@ -380,9 +421,11 @@ export function WorkspaceFolderDialog({
   const title =
     view === "add-targets"
       ? t("addTargetsTitle")
-      : manageMode
-        ? t("manageTitle")
-        : t("title")
+      : view === "name-root"
+        ? t("nameRootTitle")
+        : manageMode
+          ? t("manageTitle")
+          : t("title")
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -392,9 +435,11 @@ export function WorkspaceFolderDialog({
           <DialogDescription>
             {view === "pick-root"
               ? t("pickRootDescription")
-              : view === "add-targets"
-                ? t("addTargetsDescription")
-                : t("linksDescription")}
+              : view === "name-root"
+                ? t("nameRootDescription")
+                : view === "add-targets"
+                  ? t("addTargetsDescription")
+                  : t("linksDescription")}
           </DialogDescription>
         </DialogHeader>
 
@@ -436,6 +481,53 @@ export function WorkspaceFolderDialog({
                   <Loader2 className="size-4 animate-spin" />
                 ) : null}
                 {t("next")}
+              </Button>
+            </DialogFooter>
+          </>
+        ) : null}
+
+        {view === "name-root" ? (
+          <>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <Input
+                  value={aliasInput}
+                  onChange={(e) => setAliasInput(e.target.value)}
+                  placeholder={t("nameRootPlaceholder")}
+                  className={cn(
+                    "h-9 text-sm",
+                    aliasInput.trim() &&
+                      !aliasValid &&
+                      "border-destructive focus-visible:ring-0"
+                  )}
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") void handleSaveRootAlias()
+                  }}
+                />
+                {/* Live preview of the sidebar chip the name produces. */}
+                {aliasMark && aliasValid ? (
+                  <span className="inline-flex h-4 w-[22px] shrink-0 items-center justify-center rounded-[4px] bg-muted text-[10px] font-bold leading-4">
+                    {aliasMark}
+                  </span>
+                ) : null}
+              </div>
+              {aliasInput.trim() && !aliasValid ? (
+                <div className="text-xs text-destructive">
+                  {t("nameRootInvalid")}
+                </div>
+              ) : null}
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                onClick={() => void handleSaveRootAlias()}
+                disabled={!aliasValid || aliasSaving}
+              >
+                {aliasSaving ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : null}
+                {t("nameRootSave")}
               </Button>
             </DialogFooter>
           </>

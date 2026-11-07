@@ -2675,7 +2675,13 @@
         "already_linked": "Bereits verknüpft",
         "name_unavailable": "Für diesen Ordner ist kein Name mehr frei",
         "alreadyLinkedAs": "Bereits als {name} verknüpft"
-      }
+      },
+      "nameRootTitle": "Ordner einen chinesischen Namen geben",
+      "nameRootDescription": "Das Sidebar-Kürzel nimmt die ersten zwei Zeichen dieses Namens, daher muss er chinesisch sein (mindestens zwei CJK-Zeichen).",
+      "nameRootPlaceholder": "z. B. 工具",
+      "nameRootSave": "Speichern und weiter",
+      "nameRootInvalid": "Mindestens zwei CJK-Zeichen erforderlich",
+      "nameRootSaveFailed": "Ordnername konnte nicht gespeichert werden"
     },
     "folderNameDropdown": {
       "fallbackFolderName": "Ordner",

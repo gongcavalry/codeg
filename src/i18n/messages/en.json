@@ -2675,7 +2675,13 @@
         "already_linked": "Already linked",
         "name_unavailable": "No free name is left for this folder",
         "alreadyLinkedAs": "Already linked as {name}"
-      }
+      },
+      "nameRootTitle": "Name the folder in Chinese",
+      "nameRootDescription": "The sidebar chip takes the first two characters of this name, so it must be Chinese (at least two CJK characters).",
+      "nameRootPlaceholder": "e.g. 工具",
+      "nameRootSave": "Save and continue",
+      "nameRootInvalid": "At least two CJK characters are required",
+      "nameRootSaveFailed": "Failed to save the folder name"
     },
     "folderNameDropdown": {
       "fallbackFolderName": "Folder",
