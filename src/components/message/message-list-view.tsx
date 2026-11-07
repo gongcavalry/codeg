@@ -114,6 +114,10 @@ import {
   type LoadedMessageSubAgents,
 } from "@/components/message/message-nav-entries"
 import { useMessageNavJump } from "@/components/message/use-message-nav-jump"
+import {
+  UserPromptRail,
+  userPromptNeighbors,
+} from "@/components/message/user-prompt-rail"
 import { useConversationOutline } from "@/hooks/use-conversation-outline"
 import {
   publishTranscriptInsights,
@@ -2178,13 +2182,15 @@ export function MessageListView({
             loadingOlderLabel={t("loadingEarlier")}
             prependEpoch={session?.olderTurnsPrependEpoch ?? 0}
             prependScopeKey={conversationId}
-            onViewportTopChange={navDemanded ? setViewportTop : undefined}
+            onViewportTopChange={setViewportTop}
           />
-          {/* Stacked, not overlapping: both pin to the thread's bottom centre,
-          so the scroll button steps up while the pill is showing. */}
-          <MessageThreadScrollButton
-            className={pendingOutOfTurnContent ? "bottom-16" : undefined}
-          />
+          {loadedUserMessages.count > 0 && (
+            <UserPromptRail
+              previousIndex={promptNeighbors.previous}
+              nextIndex={promptNeighbors.next}
+              onJump={jumpToUserPrompt}
+            />
+          )}
           {pendingOutOfTurnContent && (
             <Button
               className="absolute bottom-4 left-[50%] translate-x-[-50%] gap-1.5 rounded-full bg-background/90 shadow-sm hover:bg-muted/90"
