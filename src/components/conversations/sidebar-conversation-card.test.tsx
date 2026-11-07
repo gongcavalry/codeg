@@ -283,8 +283,8 @@ describe("SidebarConversationCard running badge", () => {
         onStatusChange={onStatusChange}
       />
     )
-    expect(getByTitle("Not done").textContent).toBe("Not done")
-    expect(queryByText("5m")).toBeNull()
+    expect(getByTitle("Not done").querySelector(".rounded-full")).not.toBeNull()
+    expect(queryByText("5m")).not.toBeNull()
   })
 })
 

@@ -656,10 +656,28 @@ export const SidebarConversationCard = memo(function SidebarConversationCard({
                         </span>
                       ) : needsFollowUp ? (
                         <span
-                          className="relative shrink-0 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[0.6875rem] font-medium text-amber-700 dark:text-amber-300"
+                          className="relative inline-flex shrink-0 items-center gap-1.5"
                           title={tSidebar("statusOpenBadge")}
                         >
-                          {tSidebar("statusOpenBadge")}
+                          <span
+                            className="h-2 w-2 shrink-0 rounded-full bg-amber-500"
+                            aria-hidden
+                          />
+                          {timeLabel ? (
+                            <span
+                              className={cn(
+                                "shrink-0 tabular-nums text-[0.71875rem]",
+                                isSelected
+                                  ? "font-medium text-muted-foreground"
+                                  : "font-normal text-muted-foreground/70"
+                              )}
+                            >
+                              {timeLabel}
+                            </span>
+                          ) : null}
+                          <span className="sr-only">
+                            {tSidebar("statusOpenBadge")}
+                          </span>
                         </span>
                       ) : isCancelled ? (
                         <span
