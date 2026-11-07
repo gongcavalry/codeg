@@ -1,3 +1,29 @@
+> **这是 [spacering-net/codeg](https://github.com/spacering-net/codeg) 的个人下游分支（`bc` 分支）。**
+>
+> **为什么有这个 fork**
+>
+> 上游 Codeg 是一个非常优秀的多智能体编程工作台，代码组织清晰、基于开源协议（Apache 2.0）非常容易修改——这是它能被这样使用的前提，感谢上游作者。
+>
+> 我不是程序员。读这个项目的代码、改这个项目的界面的过程，本身就是我在学习程序开发。我之前的日常使用环境是 DSH（我们自己内部的一套工作台），用得很顺手，所以我更喜欢 DSH 的交互风格。这个 fork 就是我的「开发板」：把我之前在 DSH 上沉淀的交互逻辑和写法，搬到 Codeg 这个更优秀的底座上，自己维护、自己用。
+>
+> **维护方式**：持续跟随上游。上游出新版本，就把新东西合并进 `bc` 分支（`main` 只跟踪上游，不放私人改动）；我们改出的东西里通用性强的，会整理成 PR 回捐上游（已 merged：#771；在途：#1103、#1104）。
+>
+> **目前这块开发板上的改动**（`git log v0.42.0..bc`）：
+>
+> - 侧栏：文件夹 / 最近 双视图切换；单击直接打开会话；双击重命名
+> - 会话行：DSH 风格模型缩写徽章（GK/K3/DS…）+ 目录缩写徽章（工具/电商…）
+> - 「关注」星星：标题后的纯标记，不挪位置；「不显示」：从最近视图隐藏（非归档）
+> - 消息区：用户提示跳转栏（上一条/下一条/回到底部）
+> - 中文标题保护：英文自动摘要绝不覆盖中文标题
+> - Cursor 会话从指纹回补模型名
+> - DSH 风格外观与布局若干
+>
+> 改动的完整记录（中文）：`tools/codeg1/更改记录.md`（私有仓库侧）；构建本机 app（CodeG1）的流程也在其中。
+>
+> ---
+>
+> **This is a personal downstream fork of [spacering-net/codeg](https://github.com/spacering-net/codeg) (branch `bc`).** Upstream is excellent and a pleasure to modify; this fork is my learning/dev board where I port the interaction style I'm used to (from our internal DSH workspace) onto it, continuously merging upstream releases. Generally useful fixes are offered back as PRs. All credit for the project itself goes to upstream.
+
 <h1 align="center">
   <a href="https://docs.codeg.app"><img src="./public/icon.svg" alt="Codeg logo" width="64" align="absmiddle" /></a> Codeg
 </h1>
