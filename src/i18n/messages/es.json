@@ -2236,6 +2236,7 @@
       "sectionOrderMoveDown": "Bajar",
       "sectionOrderItemLabel": "{name} — posición {position} de {total}",
       "statusRunningBadge": "Ejecutando",
+      "statusOpenBadge": "Sin terminar",
       "runningCountBadge": "{count, plural, one {# sesión en ejecución} other {# sesiones en ejecución}}",
       "statusCancelledBadge": "Cancelado",
       "worktreeRemovedBadge": "Worktree de origen eliminado",

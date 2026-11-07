@@ -269,6 +269,23 @@ describe("SidebarConversationCard running badge", () => {
     expect(turning?.querySelector("svg")).not.toBeNull()
     expect(badge.querySelector("svg.animate-spin")).toBeNull()
   })
+
+  it("keeps a Not done mark after the run stops and the row is not completed", () => {
+    const { getByTitle, queryByText } = renderWithIntl(
+      <SidebarConversationCard
+        conversation={{ ...conv(1), status: "pending_review" }}
+        isSelected={false}
+        timeLabel="5m"
+        onSelect={onSelect}
+        onDoubleClick={onDoubleClick}
+        onRename={onRename}
+        onDelete={onDelete}
+        onStatusChange={onStatusChange}
+      />
+    )
+    expect(getByTitle("Not done").textContent).toBe("Not done")
+    expect(queryByText("5m")).toBeNull()
+  })
 })
 
 // The hover-reveal icon buttons live in the row's right slot as siblings of the

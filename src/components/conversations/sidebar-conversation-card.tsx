@@ -377,6 +377,8 @@ export const SidebarConversationCard = memo(function SidebarConversationCard({
   const status = conversation.status as ConversationStatus
   const isRunning = status === "in_progress"
   const isCancelled = status === "cancelled"
+  // 这一轮已经停了，人还没把它标成完成。右边必须留字，不能变回普通时间。
+  const needsFollowUp = status === "pending_review"
   const isPinned = conversation.pinned_at != null
   const isCompleted = status === "completed"
   const isHidden = conversation.hidden_at != null
@@ -651,6 +653,13 @@ export const SidebarConversationCard = memo(function SidebarConversationCard({
                           <span className="sr-only">
                             {tSidebar("statusRunningBadge")}
                           </span>
+                        </span>
+                      ) : needsFollowUp ? (
+                        <span
+                          className="relative shrink-0 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[0.6875rem] font-medium text-amber-700 dark:text-amber-300"
+                          title={tSidebar("statusOpenBadge")}
+                        >
+                          {tSidebar("statusOpenBadge")}
                         </span>
                       ) : isCancelled ? (
                         <span
