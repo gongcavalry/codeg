@@ -59,6 +59,8 @@ import {
   updateConversationTitle,
   updateConversationStatus,
   updateConversationPinned,
+  updateConversationHidden,
+  updateConversationStarred,
   updateFolderColor,
   updateFolderAlias,
   updateFolderDefaultAgent,
@@ -2189,18 +2191,16 @@ export function SidebarConversationList({
       // Selecting a conversation returns to the conversation workspace if a
       // workbench route (e.g. Automations) was taking over the content region.
       openConversations()
-      openTab(folderId, id, agentType as Parameters<typeof openTab>[2], false)
-    },
-    [openTab, openConversations]
-  )
-
-  const handleDoubleClick = useCallback(
-    (id: number, agentType: string, folderId: number) => {
-      openConversations()
+      // BC patch: single click pins the tab (pin=true). Upstream used preview
+      // tabs (pin=false) à la VS Code, where the next single click silently
+      // replaces the tab you just opened — read as "the chat didn't open".
       openTab(folderId, id, agentType as Parameters<typeof openTab>[2], true)
     },
     [openTab, openConversations]
   )
+
+  // BC patch: double-click no longer opens/pins a tab (single click pins
+  // outright); the card uses it for rename, DSH-style.
 
   const handleRename = useCallback(
     async (id: number, newTitle: string) => {

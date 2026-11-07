@@ -298,18 +298,13 @@ export const SidebarConversationCard = memo(function SidebarConversationCard({
     conversation.folder_id,
   ])
 
+  // BC patch (DSH logic): double-click renames. Upstream it pinned the preview
+  // tab, which is moot now that a single click pins outright (see
+  // sidebar-conversation-list handleSelect).
   const handleDblClick = useCallback(() => {
-    onDoubleClick?.(
-      conversation.id,
-      conversation.agent_type,
-      conversation.folder_id
-    )
-  }, [
-    onDoubleClick,
-    conversation.id,
-    conversation.agent_type,
-    conversation.folder_id,
-  ])
+    setRenameValue(conversation.title || "")
+    setRenameOpen(true)
+  }, [conversation.title])
 
   // Snapshotted on open instead of subscribed: one card renders per visible
   // sidebar row, so a live `useTabStore` selector here would add a store

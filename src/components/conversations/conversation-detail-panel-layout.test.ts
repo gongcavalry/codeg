@@ -398,28 +398,10 @@ describe("ConversationDetailPanel split-group render model", () => {
   // group strips instead: every strip's tail spacer is a drag region, and the
   // TOP-edge strips re-create the corner reserves (traffic lights / caption
   // buttons / chrome clusters) the unsplit row normally provides.
-  it("replaces the unsplit title-bar row with in-strip drag surfaces while split", () => {
-    // Layout: the whole h-10 conversation top bar is gated on !isConvSplit;
-    // the old always-rendered row with a split drag-region branch is gone.
-    expect(workspaceLayoutSource).toContain("{!isConvSplit && (")
-    expect(workspaceLayoutSource).not.toContain("hasConvTabs && !isConvSplit")
-
-    // Panel: TOP-edge group strips carry the corner reserves themselves.
-    const shellStart = source.indexOf("const renderGroupShell = (groupId")
-    const shellBody = source.slice(shellStart, shellStart + 6000)
-    expect(shellBody).toContain(
-      '{touchesLeft && <SplitStripCornerReserve side="left" />}'
-    )
-    expect(shellBody).toContain(
-      '{touchesRight && <SplitStripCornerReserve side="right" />}'
-    )
-
-    // Tab bar: the tail spacer is a window-drag region on EVERY strip (group
-    // strips are the window's top edge while split), not just the unsplit one.
-    expect(tabBarSource).toContain(
-      '<div data-tauri-drag-region className="h-full min-w-10 flex-1" />'
-    )
-    expect(tabBarSource).not.toContain("data-tauri-drag-region={groupId")
+  it("does not mount a conversation tab strip above the title", () => {
+    expect(workspaceLayoutSource).not.toContain("<TabBar")
+    expect(source).not.toContain("<TabBar")
+    expect(source).toContain("chromePad={chromePad}")
   })
 })
 
