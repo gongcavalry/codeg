@@ -217,26 +217,62 @@ pub async fn update_title(
 /// A title with no Chinese does not replace one that already has Chinese.
 /// Cursor and Grok publish an English summary after the first prompt; that
 /// summary must not become the only name of a chat the user opened in Chinese.
+///
+/// The CJK guard is enforced ATOMICALLY with the write: every attempt is a
+/// compare-and-swap UPDATE whose WHERE matches the title we just observed, so
+/// a Chinese name landing between our read and the write (e.g. from
+/// [`adopt_prompt_title`] running on the prompt path while a lifecycle worker
+/// parses the session file) makes the UPDATE match nothing — we then re-read
+/// and re-check instead of clobbering it.
 pub async fn refresh_auto_title(
     conn: &DatabaseConnection,
     conversation_id: i32,
     title: String,
 ) -> Result<bool, DbError> {
-    use sea_orm::sea_query::Expr;
     let title = title.trim();
     if title.is_empty() {
         return Ok(false);
     }
-    if !title_has_cjk(title) {
-        if let Some(row) = conversation::Entity::find_by_id(conversation_id)
+    for _ in 0..2 {
+        let Some(row) = conversation::Entity::find_by_id(conversation_id)
             .one(conn)
             .await?
-        {
-            if row.title.as_deref().is_some_and(title_has_cjk) {
-                return Ok(false);
-            }
+        else {
+            return Ok(false);
+        };
+        if row.title_locked || row.deleted_at.is_some() {
+            return Ok(false);
         }
+        if row.title.as_deref() == Some(title) {
+            return Ok(false);
+        }
+        if !title_has_cjk(title) && row.title.as_deref().is_some_and(title_has_cjk) {
+            return Ok(false);
+        }
+        if cas_title(conn, conversation_id, title, row.title.as_deref()).await? > 0 {
+            return Ok(true);
+        }
+        // Lost a race: loop once to re-read and re-check every guard against
+        // the title that actually won.
     }
+    Ok(false)
+}
+
+/// One compare-and-swap title write: update only when the stored title still
+/// equals `expected` (`None` = NULL), the row is unlocked, not deleted, and
+/// the value would actually change. Returns the number of rows written (0 or
+/// 1). Never sets `title_locked` and never bumps `updated_at`.
+async fn cas_title(
+    conn: &DatabaseConnection,
+    conversation_id: i32,
+    title: &str,
+    expected: Option<&str>,
+) -> Result<u64, DbError> {
+    use sea_orm::sea_query::Expr;
+    let expected_condition = match expected {
+        Some(observed) => sea_orm::Condition::all().add(conversation::Column::Title.eq(observed)),
+        None => sea_orm::Condition::all().add(conversation::Column::Title.is_null()),
+    };
     let res = conversation::Entity::update_many()
         .col_expr(conversation::Column::Title, Expr::value(title))
         .filter(conversation::Column::Id.eq(conversation_id))
@@ -247,9 +283,10 @@ pub async fn refresh_auto_title(
                 .add(conversation::Column::Title.is_null())
                 .add(conversation::Column::Title.ne(title)),
         )
+        .filter(expected_condition)
         .exec(conn)
         .await?;
-    Ok(res.rows_affected > 0)
+    Ok(res.rows_affected)
 }
 
 /// First-prompt seed: write `title` ONLY when the row is unlocked AND still
@@ -296,9 +333,17 @@ pub(crate) fn title_has_cjk(title: &str) -> bool {
 ///
 /// An empty row takes the prompt. A Chinese prompt also replaces a stored
 /// title that has no Chinese, so an English agent summary that landed first
-/// does not stay as the name. A title that already contains Chinese is left
-/// alone: a later message must not rename the chat. Locked and deleted rows
-/// are never touched. Does not bump `updated_at`.
+/// does not stay as the name — but only on the conversation's OPENING prompt
+/// (`message_count == 0`, i.e. no persisted turns yet): a follow-up such as
+/// `继续` must never rename a chat the agent already titled, so once turns
+/// exist this degrades to [`seed_auto_title_if_empty`]. A title that already
+/// contains Chinese is left alone. Locked and deleted rows are never touched.
+/// Does not bump `updated_at`.
+///
+/// The replace is a compare-and-swap on the observed title (same shape as
+/// [`refresh_auto_title`]): a Chinese native title landing between our read
+/// and the write makes the UPDATE match nothing, and we re-read and re-check
+/// the CJK, lock, and deletion guards instead of overwriting it.
 pub async fn adopt_prompt_title(
     conn: &DatabaseConnection,
     conversation_id: i32,
@@ -311,19 +356,32 @@ pub async fn adopt_prompt_title(
     if !title_has_cjk(title) {
         return seed_auto_title_if_empty(conn, conversation_id, title.to_string()).await;
     }
-    let Some(row) = conversation::Entity::find_by_id(conversation_id)
-        .one(conn)
-        .await?
-    else {
-        return Ok(false);
-    };
-    if row.title_locked || row.deleted_at.is_some() {
-        return Ok(false);
+    for _ in 0..2 {
+        let Some(row) = conversation::Entity::find_by_id(conversation_id)
+            .one(conn)
+            .await?
+        else {
+            return Ok(false);
+        };
+        if row.title_locked || row.deleted_at.is_some() {
+            return Ok(false);
+        }
+        if row.title.as_deref().is_some_and(title_has_cjk) {
+            return Ok(false);
+        }
+        if row.title.as_deref() == Some(title) {
+            return Ok(false);
+        }
+        if row.message_count > 0 {
+            // Follow-up prompt on an already-titled conversation: fill an
+            // empty name only, never rename.
+            return seed_auto_title_if_empty(conn, conversation_id, title.to_string()).await;
+        }
+        if cas_title(conn, conversation_id, title, row.title.as_deref()).await? > 0 {
+            return Ok(true);
+        }
     }
-    if row.title.as_deref().is_some_and(title_has_cjk) {
-        return Ok(false);
-    }
-    refresh_auto_title(conn, conversation_id, title.to_string()).await
+    Ok(false)
 }
 
 /// Write the session's `model` ONLY when the row still has none. The sibling
@@ -368,7 +426,11 @@ pub async fn seed_model_if_empty(
 
 /// Cursor rows whose sidebar chip is blank, with the session id needed to
 /// read the model out of that session's store. Deleted rows and rows that
-/// already have a model are not returned.
+/// already have a model are not returned. Rows in soft-deleted folders and
+/// loop conversations are excluded too: the workspace list hides them (same
+/// filter as `refresh_codex_auto_titles`), so a successful backfill must not
+/// broadcast an upsert that reinserts a hidden row into another client's
+/// workspace state.
 pub async fn cursor_sessions_missing_model(
     conn: &DatabaseConnection,
 ) -> Result<Vec<(i32, String)>, DbError> {
@@ -376,6 +438,16 @@ pub async fn cursor_sessions_missing_model(
         .filter(conversation::Column::DeletedAt.is_null())
         .filter(conversation::Column::AgentType.eq(AgentType::Cursor.as_wire().into_owned()))
         .filter(conversation::Column::ExternalId.is_not_null())
+        .filter(conversation::Column::Kind.ne(ConversationKind::Loop))
+        .filter(
+            conversation::Column::FolderId.in_subquery(
+                sea_orm::sea_query::Query::select()
+                    .column(folder::Column::Id)
+                    .from(folder::Entity)
+                    .and_where(folder::Column::DeletedAt.is_null())
+                    .to_owned(),
+            ),
+        )
         .filter(
             sea_orm::Condition::any()
                 .add(conversation::Column::Model.is_null())
@@ -390,6 +462,40 @@ pub async fn cursor_sessions_missing_model(
             Some((row.id, external_id))
         })
         .collect())
+}
+
+/// [`seed_model_if_empty`] plus an atomic identity check: the row must still
+/// be bound to the session the model was read from. A model lookup walks the
+/// session store off the async runtime; if `bind_external_id` rebinds the row
+/// to a different session during that walk, an ID-only write would persist
+/// the previous session's model on the replacement (and later backfills would
+/// then skip it). Matching the external id in the same UPDATE turns that race
+/// into a no-op.
+pub async fn seed_model_if_empty_for_session(
+    conn: &DatabaseConnection,
+    conversation_id: i32,
+    external_id: &str,
+    model: &str,
+) -> Result<bool, DbError> {
+    use sea_orm::sea_query::Expr;
+    let model = model.trim();
+    if model.is_empty() || external_id.trim().is_empty() {
+        return Ok(false);
+    }
+    let res = conversation::Entity::update_many()
+        .col_expr(conversation::Column::Model, Expr::value(model))
+        .filter(conversation::Column::Id.eq(conversation_id))
+        .filter(conversation::Column::DeletedAt.is_null())
+        .filter(conversation::Column::ExternalId.eq(external_id))
+        .filter(conversation::Column::AgentType.eq(AgentType::Cursor.as_wire().into_owned()))
+        .filter(
+            sea_orm::Condition::any()
+                .add(conversation::Column::Model.is_null())
+                .add(conversation::Column::Model.eq("")),
+        )
+        .exec(conn)
+        .await?;
+    Ok(res.rows_affected > 0)
 }
 
 /// Lock a row's title WITHOUT rewriting it. For a conversation whose name was
@@ -2741,6 +2847,67 @@ mod tests {
         assert!(!again, "a later Chinese message must not rename the chat");
         let summary = get_by_id(&db.conn, row.id).await.expect("get");
         assert_eq!(summary.title.as_deref(), Some("审品门禁批准卡住"));
+    }
+
+    #[tokio::test]
+    async fn adopt_prompt_title_is_opening_prompt_only() {
+        let db = fresh_in_memory_db().await;
+        let folder = seed_folder(&db, "/tmp/codeg-title-followup").await;
+        let row = create(
+            &db.conn,
+            folder,
+            AgentType::Cursor,
+            Some("Login Issue".into()),
+            None,
+        )
+        .await
+        .expect("create");
+        // The conversation already has persisted turns: anything typed now is
+        // a follow-up, not the opening prompt.
+        conversation::Entity::update_many()
+            .col_expr(
+                conversation::Column::MessageCount,
+                sea_orm::sea_query::Expr::value(3),
+            )
+            .filter(conversation::Column::Id.eq(row.id))
+            .exec(&db.conn)
+            .await
+            .expect("bump message_count");
+
+        let wrote = adopt_prompt_title(&db.conn, row.id, "继续".into())
+            .await
+            .expect("adopt follow-up");
+        assert!(
+            !wrote,
+            "a Chinese follow-up must not rename an agent-titled chat"
+        );
+        let summary = get_by_id(&db.conn, row.id).await.expect("get");
+        assert_eq!(summary.title.as_deref(), Some("Login Issue"));
+    }
+
+    #[tokio::test]
+    async fn adopt_prompt_title_on_follow_up_still_seeds_an_empty_row() {
+        let db = fresh_in_memory_db().await;
+        let folder = seed_folder(&db, "/tmp/codeg-title-followup-seed").await;
+        let row = create(&db.conn, folder, AgentType::Cursor, None, None)
+            .await
+            .expect("create");
+        conversation::Entity::update_many()
+            .col_expr(
+                conversation::Column::MessageCount,
+                sea_orm::sea_query::Expr::value(2),
+            )
+            .filter(conversation::Column::Id.eq(row.id))
+            .exec(&db.conn)
+            .await
+            .expect("bump message_count");
+
+        let wrote = adopt_prompt_title(&db.conn, row.id, "继续排查".into())
+            .await
+            .expect("adopt seeds empty");
+        assert!(wrote, "an untitled row still takes the follow-up as a seed");
+        let summary = get_by_id(&db.conn, row.id).await.expect("get");
+        assert_eq!(summary.title.as_deref(), Some("继续排查"));
     }
 
     #[tokio::test]
