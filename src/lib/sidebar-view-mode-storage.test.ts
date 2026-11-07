@@ -3,18 +3,22 @@ import { beforeEach, describe, expect, it } from "vitest"
 import {
   DEFAULT_SECTION_ORDER,
   SIDEBAR_RECENT_FILTERS,
+  loadListMode,
   loadRecentFilter,
   loadSectionCollapsed,
   loadSectionOrder,
   loadShowRecent,
   loadTagFilter,
   moveSectionInOrder,
+  moveVisibleSection,
   normalizeSectionOrder,
+  saveListMode,
   saveRecentFilter,
   saveSectionOrder,
   saveShowRecent,
   saveTagFilter,
   type SidebarRecentFilter,
+  type SidebarSectionId,
 } from "./sidebar-view-mode-storage"
 
 const SECTION_ORDER_KEY = "workspace:sidebar-section-order"
@@ -63,6 +67,38 @@ describe("normalizeSectionOrder", () => {
     expect(normalizeSectionOrder("nonsense")).toEqual(DEFAULT_SECTION_ORDER)
     expect(normalizeSectionOrder({ folders: 1 })).toEqual(DEFAULT_SECTION_ORDER)
     expect(normalizeSectionOrder([])).toEqual(DEFAULT_SECTION_ORDER)
+  })
+})
+
+describe("list mode", () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  it("defaults to folders and ignores anything that is not a known mode", () => {
+    expect(loadListMode()).toBe("folders")
+    localStorage.setItem("workspace:sidebar-list-mode", "both")
+    expect(loadListMode()).toBe("folders")
+  })
+
+  it("round-trips recent", () => {
+    saveListMode("recent")
+    expect(loadListMode()).toBe("recent")
+  })
+})
+
+describe("moveVisibleSection", () => {
+  const hidden = new Set<SidebarSectionId>(["recent"])
+
+  it("swaps with the next visible section and leaves Recent in its slot", () => {
+    expect(
+      moveVisibleSection(["folders", "recent", "chats"], hidden, "folders", 1)
+    ).toEqual(["chats", "recent", "folders"])
+  })
+
+  it("returns the same array when the move would fall off the visible list", () => {
+    const order = ["folders", "chats", "recent"] as const
+    expect(moveVisibleSection(order, hidden, "folders", -1)).toBe(order)
   })
 })
 

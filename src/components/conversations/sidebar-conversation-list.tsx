@@ -91,6 +91,7 @@ import {
   type SidebarSectionCollapsed,
   type SidebarSectionKey,
   type SidebarSortMode,
+  type SidebarListMode,
   type SidebarSectionOrder,
 } from "@/lib/sidebar-view-mode-storage"
 import {

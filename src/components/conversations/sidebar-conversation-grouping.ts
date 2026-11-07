@@ -10,6 +10,7 @@ import {
   type SidebarRecentFilter,
   type SidebarSortMode,
   type SidebarSectionKey,
+  type SidebarListMode,
   type SidebarSectionOrder,
 } from "@/lib/sidebar-view-mode-storage"
 

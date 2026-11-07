@@ -7,6 +7,7 @@ const FOLDER_GROUP_EXPANDED_KEY = "workspace:sidebar-folder-group-expanded"
 const SHOW_COMPLETED_KEY = "workspace:sidebar-show-completed"
 const SHOW_WORKTREES_KEY = "workspace:sidebar-show-worktrees"
 const SHOW_RECENT_KEY = "workspace:sidebar-show-recent"
+const LIST_MODE_KEY = "workspace:sidebar-list-mode"
 const RECENT_FILTER_KEY = "workspace:sidebar-recent-filter"
 const NAV_ITEMS_KEY = "workspace:sidebar-nav-items"
 const SORT_MODE_KEY = "workspace:sidebar-sort-mode"
@@ -30,6 +31,17 @@ export const SIDEBAR_RECENT_FILTERS = [
 export type SidebarRecentFilter = (typeof SIDEBAR_RECENT_FILTERS)[number]
 
 export const DEFAULT_RECENT_FILTER: SidebarRecentFilter = "all"
+
+/**
+ * How the list under Pinned is arranged. The two modes are exclusive:
+ * folders (folder tree, plus folderless chats) or a flat Recent list.
+ * Pinned stays above either one.
+ */
+export const SIDEBAR_LIST_MODES = ["folders", "recent"] as const
+
+export type SidebarListMode = (typeof SIDEBAR_LIST_MODES)[number]
+
+export const DEFAULT_LIST_MODE: SidebarListMode = "folders"
 
 /** The reorderable top-level sidebar sections. "Pinned" is deliberately absent:
  *  it is a transient override bucket and always stays on top. */
@@ -323,6 +335,57 @@ export function saveShowRecent(value: boolean): void {
   } catch {
     /* ignore */
   }
+}
+
+/** Folder tree or flat Recent. Anything else — absent, garbage — is folders. */
+export function loadListMode(): SidebarListMode {
+  if (typeof window === "undefined") return DEFAULT_LIST_MODE
+  try {
+    const raw = localStorage.getItem(LIST_MODE_KEY)
+    if ((SIDEBAR_LIST_MODES as readonly string[]).includes(raw ?? "")) {
+      return raw as SidebarListMode
+    }
+  } catch {
+    /* ignore */
+  }
+  return DEFAULT_LIST_MODE
+}
+
+export function saveListMode(value: SidebarListMode): void {
+  if (typeof window === "undefined") return
+  try {
+    localStorage.setItem(LIST_MODE_KEY, value)
+  } catch {
+    /* ignore */
+  }
+}
+
+/**
+ * Move `id` by `delta` slots among the sections that are NOT in `hidden`,
+ * leaving hidden sections in their stored slots. A move that would fall off
+ * either end of the visible list returns the SAME array.
+ */
+export function moveVisibleSection(
+  order: SidebarSectionOrder,
+  hidden: ReadonlySet<SidebarSectionId>,
+  id: SidebarSectionId,
+  delta: number
+): SidebarSectionOrder {
+  if (hidden.has(id)) return order
+  const visible = order.filter((section) => !hidden.has(section))
+  const from = visible.indexOf(id)
+  if (from < 0) return order
+  const to = from + delta
+  if (to < 0 || to >= visible.length || to === from) return order
+  const target = visible[to]
+  if (target === undefined) return order
+  const next = order.slice()
+  const a = next.indexOf(id)
+  const b = next.indexOf(target)
+  if (a < 0 || b < 0 || a === b) return order
+  next[a] = target
+  next[b] = id
+  return next
 }
 
 /** The Recent section's kind filter. Anything but a known value — absent,
