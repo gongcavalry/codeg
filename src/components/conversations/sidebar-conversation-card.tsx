@@ -73,6 +73,11 @@ import {
   NewConversationTagDialog,
 } from "./conversation-tag-picker"
 import { AgentIcon } from "@/components/agent-icon"
+import {
+  sessionModelMark,
+  sessionModelMarkColors,
+} from "@/lib/session-model-mark"
+import { folderNameMark, folderNameMarkColors } from "@/lib/folder-name-mark"
 import { AssistantAvatar } from "@/components/assistants/assistant-avatar"
 import { useBranchChip, useResolvedTags } from "@/hooks/use-conversation-tags"
 import { useAssistant } from "@/stores/assistants-store"
@@ -183,10 +188,48 @@ function isKeyboardFocus(target: EventTarget | null): boolean {
   }
 }
 
+/** DSH-style folder chip: 1-2 chars of the folder's display name in the DSH
+ *  measured palette (工具 blue / 电商 orange / …). Sits after the model chip. */
+function FolderNameChip({ name }: { name: string | null | undefined }) {
+  const mark = folderNameMark(name)
+  if (!mark) return null
+  const [fg, bg] = folderNameMarkColors(mark)
+  return (
+    <span
+      data-folder-name-mark={mark}
+      title={name ?? mark}
+      className="relative inline-flex h-4 w-[22px] shrink-0 items-center justify-center overflow-hidden rounded-[4px] text-[10px] font-bold leading-4"
+      style={{ color: fg, background: bg }}
+    >
+      {mark}
+    </span>
+  )
+}
+
+/** 8900-style model chip. Sits in the row, to the right of the CLI icon. */
+function SessionModelChip({ model }: { model: string | null }) {
+  const label = sessionModelMark(model)
+  const colors = sessionModelMarkColors(label)
+  if (!label || !colors) return null
+  const [fg, bg] = colors
+  return (
+    <span
+      data-session-model-mark={label}
+      title={model ?? label}
+      className="relative inline-flex h-4 w-[22px] shrink-0 items-center justify-center overflow-hidden rounded-[4px] text-[10px] font-bold leading-4"
+      style={{ color: fg, background: bg }}
+    >
+      {label}
+    </span>
+  )
+}
+
 interface SidebarConversationCardProps {
   conversation: DbConversationSummary
   isSelected: boolean
   isOpenInTab?: boolean
+  /** Folder display name for the DSH-style 1-2 char chip; null = no chip. */
+  folderName?: string | null
   timeLabel?: string
   onSelect: (id: number, agentType: string, folderId: number) => void
   onDoubleClick?: (id: number, agentType: string, folderId: number) => void
@@ -453,6 +496,8 @@ export const SidebarConversationCard = memo(function SidebarConversationCard({
                     rather than at the far end. A long title still yields
                     first: its basis is zero, so the chips take their width
                     before it takes the rest. */}
+                    <SessionModelChip model={conversation.model} />
+                    <FolderNameChip name={folderName} />
                     <span
                       className={cn(
                         "relative min-w-0 max-w-max flex-1 truncate text-[0.875rem] font-normal",
