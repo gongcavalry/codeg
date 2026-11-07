@@ -2104,6 +2104,12 @@ fn parse_automation_spec(arguments: &Value) -> Result<NewAutomationSpec, String>
         action,
         agent_type: optional_string(arguments, "agent_type"),
         folder_path: optional_string(arguments, "folder_path"),
+        // BC patch (改动十五): optional bind-to-existing-conversation id. Absent
+        // or non-numeric means a fresh session per fire (legacy behavior).
+        conversation_id: arguments
+            .get("conversation_id")
+            .and_then(|v| v.as_i64())
+            .map(|n| n as i32),
         // Absent means "live now" (the common ask); an explicit non-bool is
         // treated as absent rather than failing the whole call.
         enabled: arguments

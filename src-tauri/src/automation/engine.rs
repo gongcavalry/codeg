@@ -451,6 +451,15 @@ impl AutomationEngine {
             return Err("prompt is empty".to_string());
         }
 
+        // BC patch (改动十五): in-conversation cron — a fire injects the prompt
+        // into the bound existing conversation instead of minting a fresh
+        // session per run, so context accumulates across fires (DSH-style).
+        if cfg.action == crate::models::AutomationAction::LaunchSession
+            && cfg.conversation_id.is_some()
+        {
+            return self.launch_into_conversation(auto, &cfg, run_id, blocks).await;
+        }
+
         let cwd = self.resolve_cwd(auto, run_id).await?;
 
         // Announce the resolved working folder so every client's sidebar knows it
@@ -603,6 +612,138 @@ impl AutomationEngine {
                 // and reconcile won't revisit a Failed run — so flip it terminal
                 // here to avoid stranding a stuck-in-progress conversation.
                 self.cancel_conversation(conversation_id).await;
+                Err(e.to_string())
+            }
+        }
+    }
+
+    /// BC patch (改动十五): DSH-style in-conversation cron. Fire the prompt INTO
+    /// the conversation bound on the config: resume its agent session (spawn with
+    /// its external session id — the manager's dedup reuses a live connection if
+    /// the user has it open) and send the prompt there, so context accumulates
+    /// across fires ("already asked, don't ask again" lives in the conversation,
+    /// not in a state file). A busy conversation skips the slot (settled
+    /// `skipped`) rather than barging into a live turn.
+    async fn launch_into_conversation(
+        &self,
+        auto: &AutomationInfo,
+        cfg: &AutomationConfig,
+        run_id: i32,
+        blocks: Vec<PromptInputBlock>,
+    ) -> Result<(), String> {
+        let conversation_id = cfg.conversation_id.expect("checked by caller");
+        let conv = conversation::Entity::find_by_id(conversation_id)
+            .one(&self.db.conn)
+            .await
+            .map_err(|e| e.to_string())?
+            .ok_or_else(|| format!("bound conversation {conversation_id} not found"))?;
+        if conv.deleted_at.is_some() {
+            return Err(format!("bound conversation {conversation_id} is deleted"));
+        }
+        if conv.status == ConversationStatus::InProgress {
+            // The user (or a previous fire still settling) is mid-turn here. Skip
+            // this slot — claim_due already advanced the schedule, so the next
+            // cron instant still fires — rather than queue into a live turn.
+            let settled = automation_service::settle_run(
+                &self.db.conn,
+                run_id,
+                AutomationRunStatus::Skipped,
+                None,
+                None,
+                Some("conversation busy — slot skipped".to_string()),
+            )
+            .await
+            .map_err(|e| e.to_string())?;
+            if settled {
+                self.emit(AutomationChange::RunSettled {
+                    automation_id: auto.id,
+                    run_id,
+                    status: "skipped".to_string(),
+                });
+            }
+            return Ok(());
+        }
+
+        // Continuity means the CONVERSATION's agent, not the automation's: a
+        // cursor conversation keeps its cursor session even if the automation
+        // row says otherwise.
+        let agent_type =
+            parse_agent_type(&conv.agent_type).or_else(|_| parse_agent_type(&auto.agent_type))?;
+        let runtime_env = build_session_runtime_env(&self.db, agent_type, None, &self.data_dir)
+            .await
+            .map_err(|e| e.to_string())?;
+        verify_agent_installed(agent_type)
+            .await
+            .map_err(|e| e.to_string())?;
+
+        let working_dir = get_folder_core(&self.db, conv.folder_id)
+            .await
+            .map(|f| f.path)
+            .map_err(|e| e.to_string())?;
+
+        if run_no_longer_running(&self.db.conn, run_id).await {
+            return Ok(());
+        }
+
+        // Resume the conversation's agent session (None on its very first turn —
+        // send_prompt_linked binds the fresh session to the row, Branch A).
+        let conn_id = self
+            .manager
+            .spawn_agent(
+                agent_type,
+                Some(working_dir),
+                conv.external_id.clone(),
+                runtime_env,
+                "automation".to_string(),
+                self.emitter.clone(),
+                cfg.mode_id.clone(),
+                cfg.config_values.clone(),
+            )
+            .await
+            .map_err(|e| e.to_string())?;
+
+        self.index
+            .lock()
+            .await
+            .insert(conn_id.clone(), (run_id, auto.id));
+        let _ = automation_service::attach_run_runtime(
+            &self.db.conn,
+            run_id,
+            Some(conversation_id),
+            Some(conn_id.clone()),
+            None,
+        )
+        .await;
+        self.emit(AutomationChange::RunStarted {
+            automation_id: auto.id,
+            run_id,
+        });
+
+        if run_no_longer_running(&self.db.conn, run_id).await {
+            self.index.lock().await.remove(&conn_id);
+            let _ = self.manager.disconnect(&conn_id).await;
+            return Ok(());
+        }
+
+        match self
+            .manager
+            .send_prompt_linked_with_message_id(
+                &self.db,
+                &conn_id,
+                blocks,
+                Some(conv.folder_id),
+                Some(conversation_id),
+                None,
+                None,
+            )
+            .await
+        {
+            Ok(_) => Ok(()),
+            Err(e) => {
+                self.index.lock().await.remove(&conn_id);
+                let _ = self.manager.disconnect(&conn_id).await;
+                // Unlike the fresh-session path, do NOT cancel the conversation —
+                // it is the user's standing watch session, not a per-run row.
                 Err(e.to_string())
             }
         }

@@ -99,4 +99,10 @@ pub struct AutomationConfig {
     pub config_values: std::collections::BTreeMap<String, String>,
     #[serde(default)]
     pub label_snapshot: Option<serde_json::Value>,
+    /// BC patch (改动十五): when set with `LaunchSession`, a fire injects the
+    /// prompt INTO this existing conversation (in-conversation cron, DSH-style)
+    /// instead of launching a fresh session per run — the conversation keeps
+    /// its accumulated context across fires. `None` keeps the legacy behavior.
+    #[serde(default)]
+    pub conversation_id: Option<i32>,
 }

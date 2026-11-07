@@ -78,6 +78,11 @@ pub struct NewAutomationSpec {
     /// Absolute path of the target project. `None` → the caller's own folder.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub folder_path: Option<String>,
+    /// BC patch (改动十五): bind fires to an existing conversation — the prompt
+    /// is injected into it (DSH-style in-conversation cron) instead of launching
+    /// a fresh session each time. `None` keeps the legacy new-session behavior.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub conversation_id: Option<i32>,
     pub enabled: bool,
 }
 

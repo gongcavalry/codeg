@@ -3195,6 +3195,7 @@ mod tests {
                 action: Default::default(),
                 agent_type: None,
                 folder_path: None,
+                conversation_id: None,
                 enabled: true,
             },
         });
@@ -3276,6 +3277,7 @@ mod tests {
                 action: Default::default(),
                 agent_type: None,
                 folder_path: None,
+                conversation_id: None,
                 enabled: true,
             },
         });

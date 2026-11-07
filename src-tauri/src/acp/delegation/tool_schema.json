@@ -203,7 +203,7 @@
   },
   {
     "name": "create_automation",
-    "description": "Save a codeg Automation: a reusable job — a prompt plus a target project — that codeg runs on a cron schedule (or on demand) without anyone present. Use it when the user asks for work that should REPEAT or happen at a TIME rather than right now: 'every morning', 'each Monday', 'nightly', 'every 30 minutes', 'before standup', 'set up a recurring …'. Do NOT use it for work the user wants done in this conversation — just do that work. Each run starts a fresh headless session in its own worktree with no memory of this chat, so `prompt` must be completely self-contained: state the goal, the relevant paths, and what a finished run looks like. Creating an automation does not run it now; the tool returns the id and the next fire time so you can tell the user when it will first go off. The user can edit, disable, run, or delete it on the Automations page.",
+    "description": "Save a codeg Automation: a reusable job — a prompt plus a target project — that codeg runs on a cron schedule (or on demand) without anyone present. Use it when the user asks for work that should REPEAT or happen at a TIME rather than right now: 'every morning', 'each Monday', 'nightly', 'every 30 minutes', 'before standup', 'set up a recurring …'. Do NOT use it for work the user wants done in this conversation — just do that work. By default each run starts a fresh headless session in its own worktree with no memory of this chat, so `prompt` must be completely self-contained: state the goal, the relevant paths, and what a finished run looks like. (To keep memory across fires instead, pass `conversation_id` — see that field.) Creating an automation does not run it now; the tool returns the id and the next fire time so you can tell the user when it will first go off. The user can edit, disable, run, or delete it on the Automations page.",
     "inputSchema": {
       "type": "object",
       "required": [
@@ -242,6 +242,10 @@
         "folder_path": {
           "type": "string",
           "description": "Absolute path of the target project. Defaults to the project this conversation is in; pass it only to target a different project already open in codeg."
+        },
+        "conversation_id": {
+          "type": "number",
+          "description": "OPTIONAL, only with action 'launch_session': bind the automation to an EXISTING conversation (e.g. this one, from get_session_info). Each fire then injects `prompt` into that conversation — resuming its agent session with full accumulated context (DSH-style in-conversation cron) — instead of launching a fresh session. Use it when the user wants THIS conversation to keep watching something on a schedule ('check every hour', 'keep an eye on it'): the recurring turns remember what was already asked, sent, and concluded, so `prompt` can be incremental ('check for new replies; if none, say so briefly') rather than self-contained. A fire that lands while the conversation is mid-turn is skipped, not queued."
         },
         "enabled": {
           "type": "boolean",

@@ -237,6 +237,7 @@ impl ChatAuthoringAccess for DbChatAuthoring {
             mode_id: None,
             config_values: BTreeMap::new(),
             label_snapshot: None,
+            conversation_id: spec.conversation_id,
         };
         let config = match serde_json::to_value(&config) {
             Ok(v) => v,
@@ -658,6 +659,7 @@ mod tests {
             action: Default::default(),
             agent_type: Some("claude_code".into()),
             folder_path: None,
+            conversation_id: None,
             enabled: true,
         }
     }
