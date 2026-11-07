@@ -111,11 +111,9 @@ const SHORTCUT_BADGE_CLASS = cn(
   "group-hover:opacity-100 group-focus-visible:opacity-100"
 )
 
-// Which sections the order editor should render as switched-off. Module
-// constants rather than a per-render `new Set`, so the reference is stable and
-// the two states are spelled out once. "Recent" is the only section with a
-// visibility toggle today.
-const NO_HIDDEN_SECTIONS: ReadonlySet<SidebarSectionId> = new Set()
+// In folder mode the order editor only ranks Folders and Chat. Recent is the
+// other list mode, not a third section stacked under them, so it stays in the
+// stored order but is not a row here.
 const RECENT_HIDDEN: ReadonlySet<SidebarSectionId> = new Set(["recent"])
 
 // Icon per optional nav row. The visibility checkboxes in the view-options menu
@@ -236,14 +234,16 @@ export function Sidebar() {
   const toggleExpandLabel = allExpanded
     ? t("collapseAllGroups")
     : t("expandAllGroups")
-  const hiddenSections = showRecent ? NO_HIDDEN_SECTIONS : RECENT_HIDDEN
+  const folderSectionOrder = sectionOrder.filter(
+    (id): id is Exclude<SidebarSectionId, "recent"> => id !== "recent"
+  )
 
   useEffect(() => {
     // Hydrate from localStorage after mount to keep SSR/CSR markup consistent.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setShowCompleted(loadShowCompleted())
     setShowWorktrees(loadShowWorktrees())
-    setShowRecent(loadShowRecent())
+    setListMode(loadListMode())
     setNavItems(loadNavItemVisibility())
     setSortMode(loadSortMode())
     setSectionOrder(loadSectionOrder())
@@ -295,7 +295,7 @@ export function Sidebar() {
   const handleMoveSection = useCallback(
     (id: SidebarSectionId, delta: number) => {
       setSectionOrder((prev) => {
-        const next = moveSectionInOrder(prev, id, delta)
+        const next = moveVisibleSection(prev, RECENT_HIDDEN, id, delta)
         if (next !== prev) saveSectionOrder(next)
         return next
       })
@@ -551,13 +551,16 @@ export function Sidebar() {
                   {t("sortByUpdatedAt")}
                 </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel>{t("sectionOrder")}</DropdownMenuLabel>
-              <SidebarSectionOrderControl
-                order={sectionOrder}
-                onMove={handleMoveSection}
-                hiddenSections={hiddenSections}
-              />
+              {listMode === "folders" && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>{t("sectionOrder")}</DropdownMenuLabel>
+                  <SidebarSectionOrderControl
+                    order={folderSectionOrder}
+                    onMove={handleMoveSection}
+                  />
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -661,6 +664,41 @@ export function Sidebar() {
             }}
           />
         )}
+      </div>
+
+      {/* Exclusive arrangement of everything under Pinned. The two choices
+          never stack: folders (the tree, plus folderless chats) or a flat
+          Recent list. Pinned itself stays inside the list, above either one. */}
+      <div
+        role="radiogroup"
+        aria-label={t("listModeSwitch")}
+        className="mx-1.5 mt-2 grid shrink-0 grid-cols-2 gap-0.5 rounded-full bg-muted/70 p-0.5"
+      >
+        {(
+          [
+            ["folders", t("listModeFolders")],
+            ["recent", t("listModeRecent")],
+          ] as const
+        ).map(([mode, label]) => {
+          const selected = listMode === mode
+          return (
+            <button
+              key={mode}
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              onClick={() => handleSetListMode(mode)}
+              className={cn(
+                "h-6 rounded-full text-[0.75rem] font-medium",
+                selected
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {label}
+            </button>
+          )
+        })}
       </div>
 
       {/* On mobile, clicking a conversation card auto-closes the Drawer */}

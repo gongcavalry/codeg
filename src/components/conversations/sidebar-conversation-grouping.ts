@@ -353,6 +353,10 @@ export function selectRecentConversationsWithReuse(
   const next: DbConversationSummary[] = []
   for (const conv of conversations) {
     if (conv.pinned_at != null) continue
+    // BC patch: "不显示" — the Recent view doubles as the 任务中 board, so a
+    // row the user hid leaves this bucket (and ONLY this bucket; its folder
+    // group still shows it, which is the way back).
+    if (conv.hidden_at != null) continue
     if (!showCompleted && conv.status === "completed") continue
     const isChat = conv.kind === "chat"
     if (!isChat && !openFolderIds.has(conv.folder_id)) continue

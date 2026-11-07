@@ -164,7 +164,7 @@ describe("ConversationDetailPanel new conversation layout", () => {
     expect(conversationColumn).toMatch(
       /conversationFillsArea &&\s*"absolute inset-0 z-30 bg-background ws-transparent-bg"/
     )
-    expect(conversationColumn).toContain("<TabBar maximizeControl />")
+    expect(conversationColumn).not.toContain("<TabBar")
 
     const fileColumn = span(
       "<OverlayHostHiddenProvider hidden={conversationFillsArea}>"

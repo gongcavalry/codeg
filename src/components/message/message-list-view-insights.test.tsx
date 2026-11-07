@@ -316,8 +316,9 @@ describe("MessageListView insights", () => {
   it("follows the message the transcript shows while the rows are wanted", () => {
     seed()
     renderTranscript(true)
-    // Nobody shows the rows: the list isn't asked where it is.
-    expect(viewport.listener).toBeUndefined()
+    // The side-panel rows are hidden, so they are not highlighted. The
+    // transcript rail still listens, so it can jump between user prompts.
+    expect(viewport.listener).toEqual(expect.any(Function))
     expect(published()?.nav.currentTurnId).toBeNull()
 
     let release = () => {}

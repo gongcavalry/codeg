@@ -691,26 +691,18 @@ describe("Sidebar — Section order control", () => {
     await user.click(screen.getByRole("button", { name: "View options" }))
 
     expect(orderRowNames()).toEqual([
-      "Chat — position 1 of 3",
-      "Folders — position 2 of 3",
-      "Recent — position 3 of 3",
+      "Chat — position 1 of 2",
+      "Folders — position 2 of 2",
     ])
   })
 
-  it("keeps a hidden Recent section listed and reorderable", async () => {
+  it("hides the section-order editor while the list is in Recent mode", async () => {
     const user = userEvent.setup()
-    localStorage.setItem("workspace:sidebar-show-recent", "false")
+    localStorage.setItem("workspace:sidebar-list-mode", "recent")
     renderSidebar()
     await user.click(screen.getByRole("button", { name: "View options" }))
 
-    // Hiding is a separate preference from position: the row stays so the user
-    // can park it where it will reappear.
-    await user.click(screen.getByRole("button", { name: "Recent — Move up" }))
-    expect(spies.listProps?.sectionOrder).toEqual([
-      "folders",
-      "recent",
-      "chats",
-    ])
-    expect(spies.listProps?.showRecent).toBe(false)
+    expect(screen.queryByText("Section order")).toBeNull()
+    expect(spies.listProps?.listMode).toBe("recent")
   })
 })

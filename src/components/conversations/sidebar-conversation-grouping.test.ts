@@ -1459,6 +1459,18 @@ describe("selectChatConversationsWithReuse", () => {
 describe("selectRecentConversationsWithReuse", () => {
   const open = new Set([10])
 
+  it("drops rows marked 不显示 (hidden_at), like pinned, folder view unaffected", () => {
+    const visible = conv(1, 10)
+    const hidden = conv(2, 10, { hidden_at: new Date(6000).toISOString() })
+    const out = selectRecentConversationsWithReuse(
+      [visible, hidden],
+      true,
+      open,
+      []
+    )
+    expect(out.map((c) => c.id)).toEqual([1])
+  })
+
   it("narrows to chats or to folder sessions when a filter is set", () => {
     const folderConv = conv(1, 10)
     const chatConv = conv(2, 99, { kind: "chat" })

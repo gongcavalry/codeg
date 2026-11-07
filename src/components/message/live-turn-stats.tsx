@@ -347,11 +347,24 @@ export function LiveTurnStats({ message }: LiveTurnStatsProps) {
             <span className="hidden text-border leading-none @[24rem]/turnstats:inline">
               |
             </span>
-            <span className="hidden items-center gap-1 leading-none @[24rem]/turnstats:inline-flex">
-              <FilePenLine className="h-3 w-3 shrink-0" />
-              {editStats.files}F +
-              {formatCompactInt(editStats.additions, compactNumberFormatter)}/-
-              {formatCompactInt(editStats.deletions, compactNumberFormatter)}
+            <span
+              className="hidden items-center gap-1 leading-none @[24rem]/turnstats:inline-flex"
+              title={t("editStatsTooltip", {
+                files: editStats.files,
+                additions: lineFormatter.format(editStats.additions),
+                deletions: lineFormatter.format(editStats.deletions),
+              })}
+            >
+              <FilePenLine
+                aria-label={t("editStatsAria")}
+                className="h-3 w-3 shrink-0"
+              />
+              {t("filesChanged", { count: editStats.files })}
+              <span className="text-border">·</span>
+              {t("linesChanged", {
+                additions: lineFormatter.format(editStats.additions),
+                deletions: lineFormatter.format(editStats.deletions),
+              })}
             </span>
           </>
         )}

@@ -793,6 +793,24 @@ export const SidebarConversationCard = memo(function SidebarConversationCard({
                 )}
               </ContextMenuSubContent>
             </ContextMenuSub>
+            {/* BC patch: "不显示" sits where an Archive item would — it is the
+                Recent board's declutter action, deliberately NOT archive: the
+                row stays alive under its folder, and this same menu (opened
+                from the folder group) is the way back. */}
+            {onToggleHidden && !isSubsession && (
+              <ContextMenuItem
+                onSelect={() =>
+                  onToggleHidden(conversation.id, !isHidden)
+                }
+              >
+                {isHidden ? (
+                  <Eye className="h-4 w-4" />
+                ) : (
+                  <EyeOff className="h-4 w-4" />
+                )}
+                {isHidden ? t("unhideFromRecent") : t("hideFromRecent")}
+              </ContextMenuItem>
+            )}
             <ContextMenuSeparator />
             <ContextMenuItem
               variant="destructive"
