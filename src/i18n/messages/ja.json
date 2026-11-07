@@ -2415,10 +2415,14 @@
       "save": "保存",
       "pin": "ピン留め",
       "unpin": "ピン留めを解除",
+      "star": "スターを付ける",
+      "unstar": "スターを外す",
       "markCompleted": "完了にする",
       "reopen": "再開する",
       "expandSubsessions": "サブ会話を展開",
-      "collapseSubsessions": "サブ会話を折りたたむ"
+      "collapseSubsessions": "サブ会話を折りたたむ",
+      "hideFromRecent": "最近一覧に表示しない",
+      "unhideFromRecent": "最近一覧に再表示"
     },
     "search": {
       "dialogTitle": "検索",

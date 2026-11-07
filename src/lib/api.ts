@@ -3870,6 +3870,28 @@ export async function updateConversationPinned(
   })
 }
 
+/** BC patch: "关注" — star mark toggle; no regrouping (unlike pin). */
+export async function updateConversationStarred(
+  conversationId: number,
+  starred: boolean
+): Promise<void> {
+  return getTransport().call("update_conversation_starred", {
+    conversationId,
+    starred,
+  })
+}
+
+/** BC patch: "不显示" — Recent-view hide toggle (not archive). */
+export async function updateConversationHidden(
+  conversationId: number,
+  hidden: boolean
+): Promise<void> {
+  return getTransport().call("update_conversation_hidden", {
+    conversationId,
+    hidden,
+  })
+}
+
 export async function deleteConversation(
   conversationId: number
 ): Promise<void> {

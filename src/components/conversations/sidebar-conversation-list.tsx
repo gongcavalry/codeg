@@ -2247,6 +2247,31 @@ export function SidebarConversationList({
     [updateConversationLocal]
   )
 
+  // BC patch: "不显示" — drop the row out of the Recent (任务中) board. Same
+  // optimistic pattern as handleTogglePin; the row stays reachable under its
+  // folder, which is where "取消不显示" brings it back.
+  const handleToggleHidden = useCallback(
+    async (id: number, nextHidden: boolean) => {
+      updateConversationLocal(id, {
+        hidden_at: nextHidden ? new Date().toISOString() : null,
+      })
+      await updateConversationHidden(id, nextHidden)
+    },
+    [updateConversationLocal]
+  )
+
+  // BC patch: "关注" — pure star mark after the title; unlike pin it never
+  // regroups the row. Same optimistic pattern as handleTogglePin.
+  const handleToggleStarred = useCallback(
+    async (id: number, nextStarred: boolean) => {
+      updateConversationLocal(id, {
+        starred_at: nextStarred ? new Date().toISOString() : null,
+      })
+      await updateConversationStarred(id, nextStarred)
+    },
+    [updateConversationLocal]
+  )
+
   const handleNewConversation = useCallback(() => {
     // Starting a conversation returns to the conversation workspace if a
     // workbench route (e.g. Automations) was taking over the content region.
@@ -3275,18 +3300,20 @@ export function SidebarConversationList({
           selectedConversation?.id === conv.id
         }
         isOpenInTab={openTabKeys.has(`${conv.agent_type}:${conv.id}`)}
+        folderName={folderNames.get(conv.folder_id) ?? null}
         // The stamp the row is ordered by, so the label explains its position:
         // Recent's and Chat's own rows read their last activity even while the
         // rest of the sidebar is sorted by creation time, and sub-sessions
         // their creation time even while it is sorted by activity.
         timeLabel={formatRelative(conversationRowTimestamp(row, sortMode), now)}
         onSelect={handleSelect}
-        onDoubleClick={handleDoubleClick}
         onRename={handleRename}
         onDelete={handleDelete}
         onStatusChange={handleStatusChange}
         onNewConversation={handleNewConversationForFolder}
         onTogglePin={handleTogglePin}
+        onToggleHidden={handleToggleHidden}
+        onToggleStarred={handleToggleStarred}
         depth={row.depth}
         hasChildren={conv.child_count > 0}
         expanded={conversationExpanded.has(conv.id)}

@@ -2415,10 +2415,14 @@
       "save": "저장",
       "pin": "고정",
       "unpin": "고정 해제",
+      "star": "별표",
+      "unstar": "별표 해제",
       "markCompleted": "완료로 표시",
       "reopen": "다시 열기",
       "expandSubsessions": "하위 대화 펼치기",
-      "collapseSubsessions": "하위 대화 접기"
+      "collapseSubsessions": "하위 대화 접기",
+      "hideFromRecent": "최근 목록에서 숨기기",
+      "unhideFromRecent": "최근 목록에 다시 표시"
     },
     "search": {
       "dialogTitle": "검색",

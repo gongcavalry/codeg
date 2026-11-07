@@ -415,6 +415,52 @@ pub async fn update_conversation_pinned(
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct UpdateConversationHiddenParams {
+    pub conversation_id: i32,
+    pub hidden: bool,
+}
+
+/// BC patch: "不显示" — Recent-view hide toggle (not archive).
+pub async fn update_conversation_hidden(
+    Extension(state): Extension<Arc<AppState>>,
+    Json(params): Json<UpdateConversationHiddenParams>,
+) -> Result<Json<()>, AppCommandError> {
+    conv_commands::update_conversation_hidden_core(
+        &state.db.conn,
+        params.conversation_id,
+        params.hidden,
+    )
+    .await?;
+    conv_commands::emit_conversation_upsert(&state.emitter, &state.db.conn, params.conversation_id)
+        .await;
+    Ok(Json(()))
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateConversationStarredParams {
+    pub conversation_id: i32,
+    pub starred: bool,
+}
+
+/// BC patch: "关注" — star mark toggle; no regrouping (unlike pin).
+pub async fn update_conversation_starred(
+    Extension(state): Extension<Arc<AppState>>,
+    Json(params): Json<UpdateConversationStarredParams>,
+) -> Result<Json<()>, AppCommandError> {
+    conv_commands::update_conversation_starred_core(
+        &state.db.conn,
+        params.conversation_id,
+        params.starred,
+    )
+    .await?;
+    conv_commands::emit_conversation_upsert(&state.emitter, &state.db.conn, params.conversation_id)
+        .await;
+    Ok(Json(()))
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct DeleteConversationParams {
     pub conversation_id: i32,
 }

@@ -2643,6 +2643,8 @@ impl ConnectionManager {
                         updated_at: Set(now),
                         deleted_at: Set(None),
                         pinned_at: Set(None),
+            hidden_at: Set(None),
+            starred_at: Set(None),
                         origin_cwd: Set(None),
                         assistant_id: Set(None),
                         assistant_snapshot: Set(None),

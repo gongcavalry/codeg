@@ -15,12 +15,15 @@ import {
   SquarePen,
   Loader2,
   XCircle,
-  Pin,
-  PinOff,
   CheckCircle2,
   Info,
   ChevronRight,
   SquareTerminal,
+  Pin,
+  PinOff,
+  Star,
+  Eye,
+  EyeOff,
 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useImeGuard } from "@/hooks/use-ime-guard"
@@ -238,6 +241,11 @@ interface SidebarConversationCardProps {
   onStatusChange: (id: number, status: ConversationStatus) => Promise<void>
   onNewConversation?: (folderId: number) => void
   onTogglePin?: (id: number, nextPinned: boolean) => void
+  /** BC patch: "不显示" toggle — hides the row from the Recent (任务中) view;
+   *  the folder group still shows it and offers the way back. */
+  onToggleHidden?: (id: number, nextHidden: boolean) => void
+  /** BC patch: "关注" star toggle — pure mark after the title, no regrouping. */
+  onToggleStarred?: (id: number, nextStarred: boolean) => void
   /** Delegation-tree nesting depth (0 = root). Drives the per-level indent. */
   depth?: number
   /** True when `child_count > 0`: the conversation has delegation children, so
@@ -253,14 +261,16 @@ export const SidebarConversationCard = memo(function SidebarConversationCard({
   conversation,
   isSelected,
   isOpenInTab = false,
+  folderName = null,
   timeLabel,
   onSelect,
-  onDoubleClick,
   onRename,
   onDelete,
   onStatusChange,
   onNewConversation,
   onTogglePin,
+  onToggleHidden,
+  onToggleStarred,
   depth = 0,
   hasChildren = false,
   expanded = false,
@@ -369,6 +379,8 @@ export const SidebarConversationCard = memo(function SidebarConversationCard({
   const isCancelled = status === "cancelled"
   const isPinned = conversation.pinned_at != null
   const isCompleted = status === "completed"
+  const isHidden = conversation.hidden_at != null
+  const isStarred = conversation.starred_at != null
 
   return (
     <>
@@ -502,6 +514,17 @@ export const SidebarConversationCard = memo(function SidebarConversationCard({
                       {formatConversationTitle(conversation.title) ||
                         t("untitledConversation")}
                     </span>
+                    {/* Starred = "关注": always-on amber star right after the
+                    title text. Deliberately NOT before the chips (that would
+                    break the left alignment of every row) and NOT near the
+                    time badge (reads as a status). Unlike pin, starring never
+                    moves the row. */}
+                    {isStarred && (
+                      <Star
+                        aria-hidden
+                        className="h-3 w-3 shrink-0 fill-amber-500 text-amber-500"
+                      />
+                    )}
                     {/* Inline, inside the row's fixed 2rem height: the list's
                     virtualizer and rail geometry assume one line per row. The
                     full set of tags is in the hover bubble. Capped so the
@@ -667,26 +690,29 @@ export const SidebarConversationCard = memo(function SidebarConversationCard({
                     centred icon in a transparent box would. */}
                     {!isSubsession && (
                       <div className="hidden items-center gap-px group-hover:flex">
-                        {onTogglePin && (
+                        {/* BC patch: the hover quick action stars ("关注"),
+                        not pins — pinning moved to the context menu only, so
+                        the one-click gesture is the lightweight mark. */}
+                        {onToggleStarred && (
                           <button
                             type="button"
                             tabIndex={-1}
                             onClick={(e) => {
                               e.stopPropagation()
-                              onTogglePin(conversation.id, !isPinned)
+                              onToggleStarred(conversation.id, !isStarred)
                             }}
-                            title={isPinned ? t("unpin") : t("pin")}
-                            aria-label={isPinned ? t("unpin") : t("pin")}
+                            title={isStarred ? t("unstar") : t("star")}
+                            aria-label={isStarred ? t("unstar") : t("star")}
                             className={cn(
                               "flex h-6 w-6 shrink-0 items-center justify-end rounded-[0.375rem]",
                               "cursor-pointer outline-none transition-colors duration-150",
                               "text-muted-foreground/90 hover:text-sidebar-foreground"
                             )}
                           >
-                            {isPinned ? (
-                              <PinOff className="h-[0.875rem] w-[0.875rem]" />
+                            {isStarred ? (
+                              <Star className="h-[0.875rem] w-[0.875rem] fill-amber-500 text-amber-500" />
                             ) : (
-                              <Pin className="h-[0.875rem] w-[0.875rem]" />
+                              <Star className="h-[0.875rem] w-[0.875rem]" />
                             )}
                           </button>
                         )}
@@ -745,6 +771,19 @@ export const SidebarConversationCard = memo(function SidebarConversationCard({
                   <Pin className="h-4 w-4" />
                 )}
                 {isPinned ? t("unpin") : t("pin")}
+              </ContextMenuItem>
+            )}
+            {/* BC patch: "关注" — star mark after the title, no regrouping. */}
+            {onToggleStarred && (
+              <ContextMenuItem
+                onSelect={() => onToggleStarred(conversation.id, !isStarred)}
+              >
+                {isStarred ? (
+                  <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
+                ) : (
+                  <Star className="h-4 w-4" />
+                )}
+                {isStarred ? t("unstar") : t("star")}
               </ContextMenuItem>
             )}
             <ContextMenuItem onSelect={() => setDetailsOpen(true)}>

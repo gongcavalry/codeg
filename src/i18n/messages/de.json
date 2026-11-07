@@ -2415,10 +2415,14 @@
       "save": "Speichern",
       "pin": "Anheften",
       "unpin": "Loslösen",
+      "star": "Markieren",
+      "unstar": "Markierung entfernen",
       "markCompleted": "Als abgeschlossen markieren",
       "reopen": "Erneut öffnen",
       "expandSubsessions": "Unterkonversationen einblenden",
-      "collapseSubsessions": "Unterkonversationen ausblenden"
+      "collapseSubsessions": "Unterkonversationen ausblenden",
+      "hideFromRecent": "Aus „Zuletzt“ ausblenden",
+      "unhideFromRecent": "Wieder in „Zuletzt“ anzeigen"
     },
     "search": {
       "dialogTitle": "Suchen",

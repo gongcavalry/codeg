@@ -601,6 +601,17 @@ export interface DbConversationSummary {
    *  Drives the sidebar's "Pinned" section (sorted by this descending); a pinned
    *  conversation is shown there instead of in its folder group. */
   pinned_at: string | null
+  /** BC patch: when the user marked this conversation "不显示" (ISO string),
+   *  or null if visible. Filters the sidebar's Recent view only — the row
+   *  still shows under its folder, which is also the way back (unhide). */
+  /** Optional in the TS type (older test fixtures omit it); the backend
+   *  always serializes it. */
+  hidden_at?: string | null
+  /** BC patch: when the user starred this conversation ("关注", ISO string),
+   *  or null if not starred. Pure visual star after the title — unlike
+   *  pinned_at it never regroups or reorders the row. Optional in the TS
+   *  type (older test fixtures omit it); the backend always serializes it. */
+  starred_at?: string | null
   parent_id?: number | null
   parent_tool_use_id?: string | null
   delegation_call_id?: string | null

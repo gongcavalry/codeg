@@ -1862,6 +1862,8 @@ mod tauri_app {
                 conversations::update_conversation_status,
                 conversations::update_conversation_title,
                 conversations::update_conversation_pinned,
+                conversations::update_conversation_hidden,
+                conversations::update_conversation_starred,
                 assistant_commands::assistant_list,
                 assistant_commands::assistant_create,
                 assistant_commands::assistant_update,

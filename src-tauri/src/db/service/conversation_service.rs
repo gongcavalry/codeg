@@ -131,6 +131,8 @@ async fn create_inner(
         updated_at: Set(now),
         deleted_at: Set(None),
         pinned_at: Set(None),
+        hidden_at: Set(None),
+        starred_at: Set(None),
         origin_cwd: Set(None),
         assistant_id: Set(assistant_id),
         assistant_snapshot: Set(assistant_snapshot),
@@ -677,6 +679,42 @@ pub async fn update_pin(
     Ok(())
 }
 
+/// BC patch: mark a conversation "不显示" (hidden from the Recent sidebar
+/// view) or visible again. Like [`update_pin`], only the one column is
+/// written — hiding is a view preference and must not bump `updated_at`.
+pub async fn update_hidden(
+    conn: &DatabaseConnection,
+    conversation_id: i32,
+    hidden: bool,
+) -> Result<(), DbError> {
+    let conv = conversation::Entity::find_by_id(conversation_id)
+        .one(conn)
+        .await?
+        .ok_or_else(|| DbError::Migration(format!("Conversation not found: {conversation_id}")))?;
+    let mut active: conversation::ActiveModel = conv.into();
+    active.hidden_at = Set(hidden.then(Utc::now));
+    active.update(conn).await?;
+    Ok(())
+}
+
+/// BC patch: star a conversation ("关注") or unstar it. Like [`update_pin`],
+/// only the one column is written — starring is a view preference and must
+/// not bump `updated_at`. Unlike pinning it never regroups the row.
+pub async fn update_star(
+    conn: &DatabaseConnection,
+    conversation_id: i32,
+    starred: bool,
+) -> Result<(), DbError> {
+    let conv = conversation::Entity::find_by_id(conversation_id)
+        .one(conn)
+        .await?
+        .ok_or_else(|| DbError::Migration(format!("Conversation not found: {conversation_id}")))?;
+    let mut active: conversation::ActiveModel = conv.into();
+    active.starred_at = Set(starred.then(Utc::now));
+    active.update(conn).await?;
+    Ok(())
+}
+
 /// Bind an agent session id (`external_id`) to a conversation row WITHOUT ever
 /// orphaning the session it was previously bound to.
 ///
@@ -1093,8 +1131,10 @@ impl CarriedOverRow {
             updated_at: Set(self.updated_at),
             deleted_at: Set(None),
             // Pinning is a view preference attached to the row the user pinned,
-            // not to the history.
+            // not to the history. Same for the BC "不显示" mark.
             pinned_at: Set(None),
+            hidden_at: Set(None),
+            starred_at: Set(None),
             origin_cwd: Set(self.origin_cwd),
             assistant_id: Set(self.assistant_id),
             assistant_snapshot: Set(self.assistant_snapshot),
@@ -1270,6 +1310,8 @@ fn conv_to_summary(r: conversation::Model) -> DbConversationSummary {
         created_at: r.created_at,
         updated_at: r.updated_at,
         pinned_at: r.pinned_at,
+        hidden_at: r.hidden_at,
+        starred_at: r.starred_at,
         parent_id: r.parent_id,
         parent_tool_use_id: r.parent_tool_use_id,
         delegation_call_id: r.delegation_call_id,

@@ -2415,10 +2415,14 @@
       "save": "儲存",
       "pin": "置頂",
       "unpin": "取消置頂",
+      "star": "關注",
+      "unstar": "取消關注",
       "markCompleted": "標記為已完成",
       "reopen": "重新開啟",
       "expandSubsessions": "展開子會話",
-      "collapseSubsessions": "摺疊子會話"
+      "collapseSubsessions": "摺疊子會話",
+      "hideFromRecent": "不顯示",
+      "unhideFromRecent": "取消不顯示"
     },
     "search": {
       "dialogTitle": "搜尋",

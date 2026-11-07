@@ -57,6 +57,13 @@ pub struct DbConversationSummary {
     /// folder group. Serialized as `null` when absent so the frontend's
     /// `pinned_at: string | null` always sees the field.
     pub pinned_at: Option<DateTime<Utc>>,
+    /// Mirror of `conversation.hidden_at` (BC patch): when set, the sidebar's
+    /// Recent view drops this row ("不显示"). Folder groups still show it.
+    pub hidden_at: Option<DateTime<Utc>>,
+    /// Mirror of `conversation.starred_at` (BC patch): when set, the sidebar
+    /// draws an amber star after the title ("关注"). No regrouping, no
+    /// reordering — unlike `pinned_at`.
+    pub starred_at: Option<DateTime<Utc>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub parent_id: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]

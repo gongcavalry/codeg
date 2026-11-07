@@ -97,7 +97,10 @@ export interface AppWorkspaceStoreState {
   updateConversationLocal: (
     id: number,
     patch: Partial<
-      Pick<DbConversationSummary, "status" | "title" | "pinned_at" | "tag_ids">
+      Pick<
+        DbConversationSummary,
+        "status" | "title" | "pinned_at" | "hidden_at" | "starred_at" | "tag_ids"
+      >
     >
   ) => void
   applyConversationUpsert: (summary: DbConversationSummary) => void

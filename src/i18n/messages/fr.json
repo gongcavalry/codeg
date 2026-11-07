@@ -2415,10 +2415,14 @@
       "save": "Enregistrer",
       "pin": "Épingler",
       "unpin": "Désépingler",
+      "star": "Suivre",
+      "unstar": "Ne plus suivre",
       "markCompleted": "Marquer comme terminé",
       "reopen": "Rouvrir",
       "expandSubsessions": "Développer les sous-conversations",
-      "collapseSubsessions": "Réduire les sous-conversations"
+      "collapseSubsessions": "Réduire les sous-conversations",
+      "hideFromRecent": "Masquer de Récents",
+      "unhideFromRecent": "Réafficher dans Récents"
     },
     "search": {
       "dialogTitle": "Rechercher",

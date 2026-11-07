@@ -2415,10 +2415,14 @@
       "save": "Salvar",
       "pin": "Fixar",
       "unpin": "Desafixar",
+      "star": "Destacar",
+      "unstar": "Remover destaque",
       "markCompleted": "Marcar como concluída",
       "reopen": "Reabrir",
       "expandSubsessions": "Expandir subconversas",
-      "collapseSubsessions": "Recolher subconversas"
+      "collapseSubsessions": "Recolher subconversas",
+      "hideFromRecent": "Ocultar de Recentes",
+      "unhideFromRecent": "Mostrar novamente em Recentes"
     },
     "search": {
       "dialogTitle": "Buscar",

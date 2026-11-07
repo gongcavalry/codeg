@@ -1402,6 +1402,8 @@ mod tests {
                 created_at: ts("2026-08-01T09:00:00Z"),
                 updated_at: ts("2026-08-01T12:00:00Z"),
                 pinned_at: None,
+                hidden_at: None,
+                starred_at: None,
                 parent_id: None,
                 parent_tool_use_id: None,
                 delegation_call_id: None,

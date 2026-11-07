@@ -2415,10 +2415,14 @@
       "save": "حفظ",
       "pin": "تثبيت",
       "unpin": "إلغاء التثبيت",
+      "star": "تمييز بنجمة",
+      "unstar": "إزالة النجمة",
       "markCompleted": "وضع علامة كمكتمل",
       "reopen": "إعادة فتح",
       "expandSubsessions": "توسيع المحادثات الفرعية",
-      "collapseSubsessions": "طي المحادثات الفرعية"
+      "collapseSubsessions": "طي المحادثات الفرعية",
+      "hideFromRecent": "إخفاء من الأخيرة",
+      "unhideFromRecent": "إظهار في الأخيرة مجدداً"
     },
     "search": {
       "dialogTitle": "بحث",

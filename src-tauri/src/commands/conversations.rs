@@ -3000,6 +3000,54 @@ pub async fn update_conversation_pinned(
     Ok(())
 }
 
+/// BC patch: "不显示" — hide from the Recent sidebar view (not archive).
+pub async fn update_conversation_hidden_core(
+    conn: &sea_orm::DatabaseConnection,
+    conversation_id: i32,
+    hidden: bool,
+) -> Result<(), AppCommandError> {
+    conversation_service::update_hidden(conn, conversation_id, hidden)
+        .await
+        .map_err(AppCommandError::from)
+}
+
+#[cfg(feature = "tauri-runtime")]
+#[cfg_attr(feature = "tauri-runtime", tauri::command)]
+pub async fn update_conversation_hidden(
+    app: tauri::AppHandle,
+    db: tauri::State<'_, AppDatabase>,
+    conversation_id: i32,
+    hidden: bool,
+) -> Result<(), AppCommandError> {
+    update_conversation_hidden_core(&db.conn, conversation_id, hidden).await?;
+    emit_conversation_upsert(&EventEmitter::Tauri(app), &db.conn, conversation_id).await;
+    Ok(())
+}
+
+/// BC patch: "关注" — pure star mark after the title; no regrouping (unlike pin).
+pub async fn update_conversation_starred_core(
+    conn: &sea_orm::DatabaseConnection,
+    conversation_id: i32,
+    starred: bool,
+) -> Result<(), AppCommandError> {
+    conversation_service::update_star(conn, conversation_id, starred)
+        .await
+        .map_err(AppCommandError::from)
+}
+
+#[cfg(feature = "tauri-runtime")]
+#[cfg_attr(feature = "tauri-runtime", tauri::command)]
+pub async fn update_conversation_starred(
+    app: tauri::AppHandle,
+    db: tauri::State<'_, AppDatabase>,
+    conversation_id: i32,
+    starred: bool,
+) -> Result<(), AppCommandError> {
+    update_conversation_starred_core(&db.conn, conversation_id, starred).await?;
+    emit_conversation_upsert(&EventEmitter::Tauri(app), &db.conn, conversation_id).await;
+    Ok(())
+}
+
 pub async fn delete_conversation_core(
     conn: &sea_orm::DatabaseConnection,
     conversation_id: i32,
@@ -3185,6 +3233,8 @@ mod tests {
             created_at: now,
             updated_at: now,
             pinned_at: None,
+            hidden_at: None,
+            starred_at: None,
             parent_id: Some(1),
             parent_tool_use_id: Some(parent_tool_use_id.into()),
             delegation_call_id: Some("call-1".into()),
@@ -7493,6 +7543,8 @@ mod tests {
                 created_at: at(-100),
                 updated_at: at(0),
                 pinned_at: None,
+            hidden_at: None,
+            starred_at: None,
                 parent_id: None,
                 parent_tool_use_id: None,
                 delegation_call_id: None,

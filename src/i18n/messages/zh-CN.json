@@ -2415,10 +2415,14 @@
       "save": "保存",
       "pin": "置顶",
       "unpin": "取消置顶",
+      "star": "关注",
+      "unstar": "取消关注",
       "markCompleted": "标记为已完成",
       "reopen": "重新打开",
       "expandSubsessions": "展开子会话",
-      "collapseSubsessions": "折叠子会话"
+      "collapseSubsessions": "折叠子会话",
+      "hideFromRecent": "不显示",
+      "unhideFromRecent": "取消不显示"
     },
     "search": {
       "dialogTitle": "搜索",

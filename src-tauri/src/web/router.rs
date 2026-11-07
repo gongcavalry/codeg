@@ -290,6 +290,14 @@ pub fn build_router_with_proxy_auth(
             post(handlers::conversations::update_conversation_pinned),
         )
         .route(
+            "/update_conversation_hidden",
+            post(handlers::conversations::update_conversation_hidden),
+        )
+        .route(
+            "/update_conversation_starred",
+            post(handlers::conversations::update_conversation_starred),
+        )
+        .route(
             "/delete_conversation",
             post(handlers::conversations::delete_conversation),
         )

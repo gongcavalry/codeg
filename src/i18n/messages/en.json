@@ -2415,10 +2415,14 @@
       "save": "Save",
       "pin": "Pin",
       "unpin": "Unpin",
+      "star": "Star",
+      "unstar": "Unstar",
       "markCompleted": "Mark as completed",
       "reopen": "Reopen",
       "expandSubsessions": "Expand sub-conversations",
-      "collapseSubsessions": "Collapse sub-conversations"
+      "collapseSubsessions": "Collapse sub-conversations",
+      "hideFromRecent": "Hide from Recent",
+      "unhideFromRecent": "Show in Recent again"
     },
     "search": {
       "dialogTitle": "Search",
